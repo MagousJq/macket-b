@@ -6,10 +6,13 @@ module.exports = app => {
 
   const CsgoSchema = new Schema({
     buffId: { type: Number },
+    igxeId: { type: Number },
     goodsName: { type: String },
     steamMinPrice: { type: Number },
+    igxeMinPrice: { type: Number },
     buffMinPrice: { type: Number },
     sellNum: { type: Number },
+    igxeSellNum: { type: Number },
     dateId: { type: mongoose.Schema.Types.ObjectId, required: true },
   });
 

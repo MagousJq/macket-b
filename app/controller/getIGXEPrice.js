@@ -16,10 +16,10 @@ class GoodsController extends Controller {
   async csgoCanBuy() {
     const { ctx } = this;
     const query = this.ctx.query;
-    query.minPrice = query.minPrice || 0.2;
-    query.maxPrice = query.maxPrice || 60;
+    query.minPrice = query.minPrice;
+    query.maxPrice = query.maxPrice;
     query.name = query.name || '';
-    query.sellNum = query.sellNum || 1;
+    query.sellNum = query.sellNum;
     const res = await ctx.service.getIGXEPrice.canBuy(query);
     this.success(res);
   }

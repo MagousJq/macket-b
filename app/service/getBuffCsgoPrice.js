@@ -77,7 +77,6 @@ class GoodsService extends Service {
     sellNum: 1,
   }) {
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    console.log(query)
     let list = await this.ctx.model.Csgo.aggregate([
       {
         $match:{ 
@@ -89,18 +88,17 @@ class GoodsService extends Service {
       }
     ]);
     list = list.filter(item =>
-      // 修改筛选条件处
       item.steamMinPrice / item.buffMinPrice >= 2
       && item.goodsName.indexOf(query.name) > -1
     );
+    list = list.slice(0, 200);
+    // list = list.filter((item, index) => {
+    //   return !list.slice(index + 1).some(e => {
+    //     return e.goodsName === item.goodsName;
+    //   });
+    // });
     list.sort((a, b) => {
       return b.steamMinPrice / b.buffMinPrice - a.steamMinPrice / a.buffMinPrice;
-    });
-    list = list.slice(0, 200);
-    list = list.filter((item, index) => {
-      return !list.slice(index + 1).some(e => {
-        return e.goodsName === item.goodsName;
-      });
     });
     list = list.map(e => {
       return {
@@ -117,27 +115,30 @@ class GoodsService extends Service {
   }
   async canSell() {
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgo.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
+    let list = await this.ctx.model.Dota.aggregate([
+      {
+        $match:{ 
+          dateId: Time.length ? Time[Time.length - 1]._id : null,
+          steamMinPrice: { $lte: 8000, $gte: 0 },
+          buffMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
+          sellNum: { $gte: parseInt(query.sellNum) }
+        }
+      }
+    ]);
     list = list.filter(item =>
       item.steamMinPrice < 5000
       && item.steamMinPrice > 0
       && item.buffMinPrice / item.steamMinPrice <= 40
       && item.buffMinPrice / item.steamMinPrice >= 0.8
-      && item.buffMinPrice >= 0.5
-      && item.buffMinPrice <= 50
-      // && item.goodsName.indexOf('AUG') > -1
-      && item.goodsName.indexOf('印花') === -1
-      && item.goodsName.indexOf('涂鸦') === -1
-      && item.sellNum >= 10
     );
-    list.sort((a, b) => {
-      return a.steamMinPrice / a.buffMinPrice - b.steamMinPrice / b.buffMinPrice;
-    });
     list = list.slice(0, 1000);
     list = list.filter((item, index) => {
       return !list.slice(index + 1).some(e => {
         return e.goodsName === item.goodsName;
       });
+    });
+    list.sort((a, b) => {
+      return a.steamMinPrice / a.buffMinPrice - b.steamMinPrice / b.buffMinPrice;
     });
     list = list.map(e => {
       return {
@@ -161,6 +162,9 @@ class GoodsService extends Service {
         buffMinPrice: item.sell_min_price,
         sellNum: item.sell_num,
         dateId: id,
+        igxeSellNum: 0,
+        igxeMinPrice: 0,
+        igxeId: null
       };
     });
   }

@@ -6,12 +6,13 @@ const cheerio=require('cheerio');
 class GoodsService extends Service {
   async getTotalData() {
     const Error = [];
+    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
     let Arr = [];
     for (let i = 1; i < 120; i++) {
       console.log('IGXE-CSGO页数:' + i);
       await (this.sleep(this.config.frequency));
       try {
-        let arr = []
+        let arr = []; 
         const Data = await this.ctx.curl(this.config.urlList.igxeCsgo + i);
         let data = JSON.stringify(Data.data);
         let html = Buffer.from(JSON.parse(data).data).toString();
@@ -28,11 +29,11 @@ class GoodsService extends Service {
           let price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
           let count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
           arr[index] = {
-            igxeId: '',
+            // igxeId: '',
             goodsName: name,
             igxeMinPrice: price,
-            steamMinPrice: '',
-            sellNum: count,
+            // steamMinPrice: '',
+            igxeSellNum: count,
           }
         })
         Arr = Arr.concat(arr)
@@ -47,12 +48,13 @@ class GoodsService extends Service {
     // }
     if(Arr.length > 0){
       this.format(Arr).forEach(item => {
-        this.ctx.model.IgxeCsgo.updateOne({
+        this.ctx.model.Csgo.updateOne({
+          dateId: Time.length ? Time[Time.length - 1]._id : null,
           goodsName: item.goodsName
         },
         item,
         {
-          upsert: true
+          upsert: false
         }, (err) => {});
       });
     }
@@ -60,75 +62,71 @@ class GoodsService extends Service {
     console.log('失败次数:' + len);
   }
   async canBuy(query = {
-    minPrice: 0.4,
-    maxPrice: 60,
+    minPrice: 0.2,
+    maxPrice: 600,
     name: '',
     sellNum: 1,
   }) {
-    const Time = await this.ctx.model.Time.find({ type: 'IGXECSGO' });
-    const BuffTime = await this.ctx.model.Time.find({ type: 'CSGO' });
-    // let list = await this.ctx.model.IgxeCsgo.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
+    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
     let list = await this.ctx.model.Csgo.aggregate([
       {
-        $match:{
-          dateId: BuffTime.length ? BuffTime[BuffTime.length - 1]._id : null,
-          buffMinPrice: { $lte: query.maxPrice, $gte: query.minPrice },
-          sellNum: { $gte: query.sellNum }
-        }
-      },
-      {
-        $lookup:{
-          from:"igxecsgos",
-          let: { name: "$goodsName" },
-          pipeline: [
-            { $match:
-              { $expr:
-                { $and:
-                  [
-                    { $eq: [ "$goodsName",  "$$name" ] }
-                  ]
-                }
-              }
-            }
-          ],
-          as:"buffCsgo"
+        $match:{ 
+          dateId: Time.length ? Time[Time.length - 1]._id : null,
+          steamMinPrice: { $lte: 8000, $gte: 0 },
+          igxeMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
+          igxeSellNum: { $gte: parseInt(query.sellNum) },
+          igxeSellNum: { $exists:true },
+          igxeMinPrice: { $exists:true }
         }
       }
     ]);
-    list = list.filter(item => {
-      let len = item.buffCsgo.length
-      if(len){
-        let buffCsgo = item.buffCsgo[0]
-        return item.steamMinPrice <= 8000
-        && item.steamMinPrice > 0
-        // && item.steamMinPrice / buffCsgo.igxeMinPrice >= 2
-        && item.goodsName.indexOf(query.name) >= 0
-      }else{
-        return false
-      }
-    });
+    // let list = await this.ctx.model.IgxeCsgo.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
+    // let list = await this.ctx.model.Csgo.aggregate([
+    //   {
+    //     $match:{
+    //       dateId: BuffTime.length ? BuffTime[BuffTime.length - 1]._id : null,
+    //       buffMinPrice: { $lte: query.maxPrice, $gte: query.minPrice },
+    //       sellNum: { $gte: query.sellNum }
+    //     }
+    //   },
+    //   {
+    //     $lookup:{
+    //       from:"igxecsgos",
+    //       let: { name: "$goodsName" },
+    //       pipeline: [
+    //         { $match:
+    //           { $expr:
+    //             { $and:
+    //               [
+    //                 { $eq: [ "$goodsName",  "$$name" ] }
+    //               ]
+    //             }
+    //           }
+    //         }
+    //       ],
+    //       as:"buffCsgo"
+    //     }
+    //   }
+    // ]);
+    list = list.filter(item =>
+      item.steamMinPrice / item.igxeMinPrice >= 2
+      && item.goodsName.indexOf(query.name) > -1
+    );
     list = list.slice(0, 200);
     list.sort((a, b) => {
-      return b.steamMinPrice / b.buffCsgo[0].igxeMinPrice - a.steamMinPrice / a.buffCsgo[0].igxeMinPrice;
+      return b.steamMinPrice / b.igxeMinPrice - a.steamMinPrice / a.igxeMinPrice;
     });
-    console.log(list)
-    // list = list.filter((item, index) => {
-    //   return !list.slice(index + 1).some(e => {
-    //     return e.goodsName === item.goodsName;
-    //   });
-    // });
     list = list.map(e => {
       return {
         id: e._id,
-        igxeId: e.buffCsgo[0] ? e.buffCsgo[0].igxeId : '-',
-        goodsName: e.buffCsgo[0] ? e.buffCsgo[0].goodsName : '-',
-        buffMinPrice: e.buffMinPrice,
         buffId: e.buffId,
-        igxeMinPrice: e.buffCsgo[0] ? e.buffCsgo[0].igxeMinPrice : '-',
+        igxeId: e.igxeId,
+        goodsName: e.goodsName,
+        igxeMinPrice: e.igxeMinPrice,
+        buffMinPrice: e.buffMinPrice,
         steamMinPrice: e.steamMinPrice,
-        sellNum: e.buffCsgo[0] ? e.buffCsgo[0].sellNum : '-',
-        time: Time[Time.length - 1].date,
-        buffCsgo: e.buffCsgo
+        igxeSellNum: e.igxeSellNum,
+        time: Time[Time.length - 1].date
       };
     });
     return list;
@@ -138,9 +136,8 @@ class GoodsService extends Service {
       return {
         igxeId: item.igxeId,
         goodsName: item.goodsName,
-        steamMinPrice: item.steamMinPrice,
         igxeMinPrice: item.igxeMinPrice,
-        sellNum: item.sellNum
+        igxeSellNum: item.igxeSellNum
       };
     });
   }
