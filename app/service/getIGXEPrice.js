@@ -74,9 +74,7 @@ class GoodsService extends Service {
           dateId: Time.length ? Time[Time.length - 1]._id : null,
           steamMinPrice: { $lte: 8000, $gte: 0 },
           igxeMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
-          igxeSellNum: { $gte: parseInt(query.sellNum) },
-          igxeSellNum: { $exists:true },
-          igxeMinPrice: { $exists:true }
+          igxeSellNum: { $gte: parseInt(query.sellNum) }
         }
       }
     ]);
