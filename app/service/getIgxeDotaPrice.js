@@ -8,7 +8,7 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
     let Arr = [];
-    for (let i = 1; i < 121; i++) {
+    for (let i = 1; i < 201; i++) {
       console.log('IGXE-DOTA2页数:' + i);
       await (this.sleep(this.config.frequency));
       try {

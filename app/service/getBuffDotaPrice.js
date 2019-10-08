@@ -75,12 +75,7 @@ class GoodsService extends Service {
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + error);
   }
-  async canBuy(query = {
-    minPrice: 0.5,
-    maxPrice: 400,
-    name: '',
-    sellNum: 1,
-  }) {
+  async canBuy(query) {
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
     let list = await this.ctx.model.Dota.aggregate([
       {

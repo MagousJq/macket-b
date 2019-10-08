@@ -70,12 +70,7 @@ class GoodsService extends Service {
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + error);
   }
-  async canBuy(query = {
-    minPrice: 0.07,
-    maxPrice: 2000,
-    name: '',
-    sellNum: 1,
-  }) {
+  async canBuy(query) {
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
     let list = await this.ctx.model.Csgo.aggregate([
       {
@@ -114,21 +109,24 @@ class GoodsService extends Service {
     return list;
   }
   async canSell() {
+    const query = {
+      maxPrice: 100,
+      minPrice: 0.5,
+      sellNum: 20
+    }
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Dota.aggregate([
+    let list = await this.ctx.model.Csgo.aggregate([
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 8000, $gte: 0 },
+          steamMinPrice: { $lte: 300, $gte: 0 },
           buffMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
           sellNum: { $gte: parseInt(query.sellNum) }
         }
       }
     ]);
     list = list.filter(item =>
-      item.steamMinPrice < 5000
-      && item.steamMinPrice > 0
-      && item.buffMinPrice / item.steamMinPrice <= 40
+      item.buffMinPrice / item.steamMinPrice <= 40
       && item.buffMinPrice / item.steamMinPrice >= 0.8
     );
     list = list.slice(0, 1000);
