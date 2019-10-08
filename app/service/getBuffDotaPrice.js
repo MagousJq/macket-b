@@ -38,6 +38,7 @@ class GoodsService extends Service {
         Error.push(i);
       }
     }
+    await this.ctx.model.Dota.remove();
     const len = Error.length;
     if (len) {
       await (this.sleep(1000));
@@ -106,6 +107,7 @@ class GoodsService extends Service {
         id: e._id,
         buffId: e.buffId,
         goodsName: e.goodsName,
+        steamMarketUrl: e.steamMarketUrl,
         buffMinPrice: e.buffMinPrice,
         steamMinPrice: e.steamMinPrice,
         sellNum: e.sellNum,
@@ -153,6 +155,7 @@ class GoodsService extends Service {
       return {
         buffId: item.id,
         goodsName: item.name,
+        steamMarketUrl: item.steam_market_url,
         steamMinPrice: item.goods_info.steam_price_cny,
         buffMinPrice: item.sell_min_price,
         sellNum: item.sell_num,

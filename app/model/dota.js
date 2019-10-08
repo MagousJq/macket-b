@@ -6,10 +6,14 @@ module.exports = app => {
 
   const DotaSchema = new Schema({
     buffId: { type: Number },
+    igxeId: { type: Number },
     goodsName: { type: String },
+    steamMarketUrl: { type: String },
     steamMinPrice: { type: Number },
     buffMinPrice: { type: Number },
+    igxeMinPrice: { type: Number },
     sellNum: { type: Number },
+    igxeSellNum: { type: Number },
     dateId: { type: mongoose.Schema.Types.ObjectId, required: true },
   });
 

@@ -8,6 +8,7 @@ module.exports = app => {
     buffId: { type: Number },
     igxeId: { type: Number },
     goodsName: { type: String },
+    steamMarketUrl: { type: String },
     steamMinPrice: { type: Number },
     igxeMinPrice: { type: Number },
     buffMinPrice: { type: Number },

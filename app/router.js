@@ -15,4 +15,8 @@ module.exports = app => {
   router.get('/steam', controller.getSteamPrice.steamPrice);
   router.post('/igxe/csgo/store', controller.getIGXEPrice.csgoStore);
   router.get('/igxe/csgo/canBuy', controller.getIGXEPrice.csgoCanBuy);
+  router.post('/igxe/dota/store', controller.getIGXEPrice.dotaStore);
+  router.get('/igxe/dota/canBuy', controller.getIGXEPrice.dotaCanBuy);
+  // router.get('/igxe/dota/canBuy', controller.getIGXEPrice.dotaSpread);
+  router.get('/igxe/dota/spread', controller.getIGXEPrice.dotaSpread);
 };
