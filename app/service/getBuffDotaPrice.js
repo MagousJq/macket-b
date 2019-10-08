@@ -38,7 +38,11 @@ class GoodsService extends Service {
         Error.push(i);
       }
     }
-    await this.ctx.model.Dota.remove();
+    try {
+      await this.ctx.model.Dota.deleteMany();
+    } catch (error) { 
+      console.log(error);
+    }
     const len = Error.length;
     if (len) {
       await (this.sleep(1000));
