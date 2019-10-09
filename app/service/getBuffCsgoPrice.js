@@ -100,6 +100,7 @@ class GoodsService extends Service {
         id: e._id,
         buffId: e.buffId,
         goodsName: e.goodsName,
+        steamMarketUrl: e.steamMarketUrl,
         buffMinPrice: e.buffMinPrice,
         steamMinPrice: e.steamMinPrice,
         sellNum: e.sellNum,
@@ -110,8 +111,8 @@ class GoodsService extends Service {
   }
   async canSell() {
     const query = {
-      maxPrice: 100,
-      minPrice: 0.5,
+      maxPrice: 50,
+      minPrice: 0.7,
       sellNum: 20
     }
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
@@ -127,7 +128,11 @@ class GoodsService extends Service {
     ]);
     list = list.filter(item =>
       item.buffMinPrice / item.steamMinPrice <= 40
-      && item.buffMinPrice / item.steamMinPrice >= 0.8
+      && item.buffMinPrice / item.steamMinPrice >= 0.9
+      && item.goodsName.indexOf('印花') === -1
+      && item.goodsName.indexOf('涂鸦') === -1
+      && item.goodsName.indexOf('破损不堪') === -1
+      && item.goodsName.indexOf('战痕累累') === -1
     );
     list = list.slice(0, 1000);
     list = list.filter((item, index) => {
@@ -154,6 +159,7 @@ class GoodsService extends Service {
   }
   format(data, id) {
     return data.map(item => {
+      console.log(item.steam_market_url)
       return {
         buffId: item.id,
         goodsName: item.name,
