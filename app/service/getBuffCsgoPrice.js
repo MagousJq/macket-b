@@ -159,7 +159,6 @@ class GoodsService extends Service {
   }
   format(data, id) {
     return data.map(item => {
-      console.log(item.steam_market_url)
       return {
         buffId: item.id,
         goodsName: item.name,
