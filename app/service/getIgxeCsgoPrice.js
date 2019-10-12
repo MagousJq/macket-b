@@ -8,7 +8,7 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
     let Arr = [];
-    for (let i = 1; i < 121; i++) {
+    for (let i = 1; i < 131; i++) {
       console.log('IGXE-CSGO页数:' + i);
       await (this.sleep(this.config.frequency));
       try {
@@ -74,7 +74,7 @@ class GoodsService extends Service {
       item.steamMinPrice / item.igxeMinPrice >= 2
       && item.goodsName.indexOf(query.name) > -1
     );
-    list = list.slice(0, 200);
+    list = list.slice(0, 300);
     list.sort((a, b) => {
       return b.steamMinPrice / b.igxeMinPrice - a.steamMinPrice / a.igxeMinPrice;
     });
