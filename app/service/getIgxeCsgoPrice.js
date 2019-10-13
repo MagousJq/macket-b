@@ -6,7 +6,7 @@ const cheerio=require('cheerio');
 class GoodsService extends Service {
   async getTotalData() {
     const Error = [];
-    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
     let Arr = [];
     for (let i = 1; i < 131; i++) {
       console.log('IGXE-CSGO页数:' + i);
@@ -44,7 +44,7 @@ class GoodsService extends Service {
     const len = Error.length;
     if(Arr.length > 0){
       this.format(Arr).forEach(item => {
-        this.ctx.model.Csgo.updateOne({
+        this.ctx.model.Csgoex.updateOne({
           dateId: Time.length ? Time[Time.length - 1]._id : null,
           goodsName: item.goodsName
         },
@@ -59,8 +59,8 @@ class GoodsService extends Service {
     console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
   }
   async canBuy(query) {
-    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgo.aggregate([
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
+    let list = await this.ctx.model.Csgoex.aggregate([
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
