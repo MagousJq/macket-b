@@ -38,6 +38,11 @@ class GoodsService extends Service {
         Error.push(i);
       }
     }
+    try {
+      await this.ctx.model.Csgoex.deleteMany();
+    } catch (error) { 
+      console.log(error);
+    }
     const len = Error.length;
     if (len) {
       await (this.sleep(1000));
@@ -62,17 +67,17 @@ class GoodsService extends Service {
     const theDate = await this.ctx.model.Time.create({
       date: now,
       num: Arr.length,
-      type: 'CSGO',
+      type: 'Csgoex',
     });
     this.format(Arr, theDate._id).forEach(item => {
-      this.ctx.model.Csgo.create(item);
+      this.ctx.model.Csgoex.create(item);
     });
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + error);
   }
   async canBuy(query) {
-    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgo.aggregate([
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
+    let list = await this.ctx.model.Csgoex.aggregate([
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
@@ -116,8 +121,8 @@ class GoodsService extends Service {
       minPrice: 0.7,
       sellNum: 20
     }
-    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgo.aggregate([
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
+    let list = await this.ctx.model.Csgoex.aggregate([
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
@@ -129,13 +134,14 @@ class GoodsService extends Service {
     ]);
     list = list.filter(item =>
       item.buffMinPrice / item.steamMinPrice <= 40
-      && item.buffMinPrice / item.steamMinPrice >= 0.9
+      && item.buffMinPrice / item.steamMinPrice >= 0.8
       && item.goodsName.indexOf('印花') === -1
       && item.goodsName.indexOf('涂鸦') === -1
       && item.goodsName.indexOf('破损不堪') === -1
       && item.goodsName.indexOf('战痕累累') === -1
+      // && item.goodsName.indexOf('A') > -1
     );
-    list = list.slice(0, 1000);
+    list = list.slice(0, 3000);
     list = list.filter((item, index) => {
       return !list.slice(index + 1).some(e => {
         return e.goodsName === item.goodsName;
