@@ -158,6 +158,7 @@ class GoodsService extends Service {
         goodsName: item.name,
         steamMarketUrl: item.steam_market_url,
         steamMinPrice: item.goods_info.steam_price_cny,
+        buffBuyPrice: item.buy_max_price,
         buffMinPrice: item.sell_min_price,
         sellNum: item.sell_num,
         dateId: id,

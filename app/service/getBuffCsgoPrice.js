@@ -133,13 +133,16 @@ class GoodsService extends Service {
       }
     ]);
     list = list.filter(item =>
-      item.buffMinPrice / item.steamMinPrice <= 40
+      item.buffMinPrice / item.steamMinPrice <= 4
       && item.buffMinPrice / item.steamMinPrice >= 0.8
       && item.goodsName.indexOf('印花') === -1
       && item.goodsName.indexOf('涂鸦') === -1
       && item.goodsName.indexOf('破损不堪') === -1
       && item.goodsName.indexOf('战痕累累') === -1
-      // && item.goodsName.indexOf('A') > -1
+      // && (item.goodsName.indexOf('AK') > -1 ||
+      // item.goodsName.indexOf('M4') > -1||
+      // item.goodsName.indexOf('AWP') > -1||
+      // item.goodsName.indexOf('沙漠之鹰') > -1)
     );
     list = list.slice(0, 3000);
     list = list.filter((item, index) => {
@@ -173,6 +176,7 @@ class GoodsService extends Service {
         steamMinPrice: item.goods_info.steam_price_cny,
         steamMarketUrl: item.steam_market_url,
         buffMinPrice: item.sell_min_price,
+        buffBuyPrice: item.buy_max_price,
         sellNum: item.sell_num,
         dateId: id,
         igxeSellNum: 0,

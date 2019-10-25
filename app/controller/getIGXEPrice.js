@@ -23,6 +23,11 @@ class GoodsController extends Controller {
     const res = await ctx.service.getIgxeCsgoPrice.canBuy(query);
     this.success(res);
   }
+  async csgoCanUse() {
+    const { ctx } = this;
+    const res = await ctx.service.getIgxeCsgoPrice.canUse();
+    this.success(res);
+  }
   async dotaStore() {
     const { ctx } = this;
     ctx.service.getIgxeDotaPrice.getTotalData();
@@ -48,6 +53,11 @@ class GoodsController extends Controller {
     query.name = query.name || '';
     query.sellNum = query.sellNum || 1;
     const res = await ctx.service.getIgxeDotaPrice.spread(query);
+    this.success(res);
+  }
+  async dotaCanUse() {
+    const { ctx } = this;
+    const res = await ctx.service.getIgxeDotaPrice.canUse();
     this.success(res);
   }
 }

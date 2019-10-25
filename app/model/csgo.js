@@ -12,6 +12,7 @@ module.exports = app => {
     steamMinPrice: { type: Number },
     igxeMinPrice: { type: Number },
     buffMinPrice: { type: Number },
+    buffBuyPrice: { type: Number },
     sellNum: { type: Number },
     igxeSellNum: { type: Number },
     dateId: { type: mongoose.Schema.Types.ObjectId, required: true },
