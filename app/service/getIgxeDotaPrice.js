@@ -8,7 +8,7 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
     let Arr = [];
-    for (let i = 1; i < 181; i++) {
+    for (let i = 1; i < 201; i++) {
       console.log('IGXE-DOTA2页数:' + i);
       await (this.sleep(this.config.frequency));
       try {
@@ -127,11 +127,11 @@ class GoodsService extends Service {
   }
   async canUse() {
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
-    let list = await this.ctx.model.Csgoex.aggregate([
+    let list = await this.ctx.model.Dota.aggregate([
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 1000, $gt: 0 },
+          steamMinPrice: { $lte: 2000, $gt: 0 },
           igxeMinPrice: { $gt: 0.5 },
           buffMinPrice: { $gt: 0.5 }
         }
@@ -141,7 +141,7 @@ class GoodsService extends Service {
       item.buffBuyPrice > item.igxeMinPrice 
     );
     list.sort((a, b) => {
-      return (b.buffBuyPrice * 0.975 - b.igxeMinPrice) - (a.buffBuyPrice * 0.975 - a.igxeMinPrice);
+      return (b.buffBuyPrice * 0.98 - b.igxeMinPrice) - (a.buffBuyPrice * 0.975 - a.igxeMinPrice);
     });
     list = list.slice(0, 300);
     list = list.map(e => {

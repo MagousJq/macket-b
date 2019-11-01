@@ -8,7 +8,7 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
     let Arr = [];
-    for (let i = 1; i < 151; i++) {
+    for (let i = 1; i < 201; i++) {
       console.log('IGXE-CSGO页数:' + i);
       await (this.sleep(this.config.frequency));
       try {
@@ -100,7 +100,7 @@ class GoodsService extends Service {
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 1000, $gt: 0 },
+          steamMinPrice: { $lte: 2000, $gt: 0 },
           igxeMinPrice: { $gt: 0.5 },
           buffMinPrice: { $gt: 0.5 }
         }
