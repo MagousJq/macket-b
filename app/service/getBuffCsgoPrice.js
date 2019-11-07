@@ -90,6 +90,7 @@ class GoodsService extends Service {
     list = list.filter(item =>
       item.steamMinPrice / item.buffMinPrice >= 2
       && item.goodsName.indexOf(query.name) > -1
+      && item.goodsName.indexOf('印花') === -1
     );
     list = list.slice(0, 200);
     // list = list.filter((item, index) => {

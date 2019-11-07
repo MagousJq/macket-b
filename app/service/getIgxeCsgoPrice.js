@@ -108,10 +108,17 @@ class GoodsService extends Service {
     ]);
     list = list.filter(item =>
       item.buffBuyPrice > item.igxeMinPrice 
+      // item.igxeMinPrice < item.buffMinPrice && 
+      // item.buffMinPrice / item.igxeMinPrice <= 2 && 
+      // item.igxeMinPrice / item.buffBuyPrice <= 1.5 && 
+      // item.sellNum > 5 
     );
     list.sort((a, b) => {
       return (b.buffBuyPrice * 0.975 - b.igxeMinPrice) - (a.buffBuyPrice * 0.975 - a.igxeMinPrice);
     });
+    // list.sort((a, b) => {
+    //   return (b.buffMinPrice - b.igxeMinPrice) - (a.buffMinPrice - a.igxeMinPrice);
+    // });
     list = list.slice(0, 300);
     list = list.map(e => {
       return {
