@@ -8,9 +8,9 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
     let Arr = [];
-    for (let i = 1; i < 201; i++) {
+    for (let i = 1; i < 26; i++) {
       console.log('IGXE-CSGO页数:' + i);
-      await (this.sleep(this.config.frequency));
+      await (this.sleep(this.config.igxeFrequency));
       try {
         let arr = []; 
         const Data = await this.ctx.curl(this.config.urlList.igxeCsgo + i);

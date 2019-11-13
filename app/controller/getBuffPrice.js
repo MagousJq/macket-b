@@ -13,7 +13,7 @@ class GoodsController extends Controller {
       ctx.service.getBuffCsgoPrice.store(total);
       this.success({
       // 返回需要多少秒
-        time: total / 1000 * this.config.frequency * 1.1 + 60,
+        time: total / 1000 * this.config.frequency * 1.1,
       });
     } else {
       this.error('服务端出错，检查日志去');
@@ -41,7 +41,7 @@ class GoodsController extends Controller {
       ctx.service.getBuffDotaPrice.store(total);
       this.success({
       // 返回需要多少秒
-        time: total / 1000 * this.config.frequency * 1.1 + 60,
+        time: total / 1000 * this.config.frequency * 1.1,
       });
     } else {
       this.error('服务端出错，检查日志去');

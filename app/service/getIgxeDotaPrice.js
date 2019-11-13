@@ -8,9 +8,9 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
     let Arr = [];
-    for (let i = 1; i < 201; i++) {
+    for (let i = 1; i < 26; i++) {
       console.log('IGXE-DOTA2页数:' + i);
-      await (this.sleep(this.config.frequency));
+      await (this.sleep(this.config.igxeFrequency));
       try {
         let arr = []; 
         const Data = await this.ctx.curl(this.config.urlList.igxeDotaBeta + i);
@@ -68,6 +68,9 @@ class GoodsService extends Service {
     list = list.filter(item =>
       item.steamMinPrice / item.igxeMinPrice >= 2
       && item.goodsName.indexOf(query.name) > -1
+      && item.goodsName.indexOf('传世') === -1
+      && item.goodsName.indexOf('冥灵') === -1
+      && item.goodsName.indexOf('签名') === -1
     );
     list = list.slice(0, 200);
     list.sort((a, b) => {
