@@ -4,7 +4,7 @@ const Service = require('egg').Service;
 class GoodsService extends Service {
   async getTotalPage() {
     try {
-      const Data = await this.ctx.curl(this.config.urlList.buffCsgo + 22, {
+      const Data = await this.ctx.curl(this.config.urlList.buffCsgo + 2, {
         dataType: 'json',
         headers: this.config.header,
       });
@@ -21,7 +21,7 @@ class GoodsService extends Service {
     let Arr = [];
     const Error = [];
     let error = 0;
-    for (let i = 1; i < total - 20; i++) {
+    for (let i = 1; i < total - 1; i++) {
       console.log('BUFF-CSGO页数:' + i);
       await (this.sleep(this.config.frequency));
       try {

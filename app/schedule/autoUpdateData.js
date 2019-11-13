@@ -15,11 +15,11 @@ class UpdateData extends Subscription {
     const csgoTotal = await this.ctx.service.getBuffCsgoPrice.getTotalPage();
     const dotaTotal = await this.ctx.service.getBuffDotaPrice.getTotalPage();
     if (csgoTotal) {
-      // await this.ctx.service.getBuffCsgoPrice.store(csgoTotal);
-      // await this.ctx.service.getIgxeCsgoPrice.getTotalData();
+      await this.ctx.service.getBuffCsgoPrice.store(csgoTotal);
+      await this.ctx.service.getIgxeCsgoPrice.getTotalData();
 
-      // await this.ctx.service.getBuffDotaPrice.store(dotaTotal);
-      // await this.ctx.service.getIgxeDotaPrice.getTotalData();
+      await this.ctx.service.getBuffDotaPrice.store(dotaTotal);
+      await this.ctx.service.getIgxeDotaPrice.getTotalData();
     } else {
       console.log('你的session过期了');
     }
