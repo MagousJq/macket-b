@@ -1,24 +1,41 @@
 'use strict';
 
 const Service = require('egg').Service;
-const Header = {
-  Connection: 'keep-alive',
-  Accept: 'application/json, text/javascript, */*; q=0.01',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
-};
-class GoodsService extends Service {
-  async getSteamCsgo() {
-    const url = 'https://steamcommunity.com/market/listings/570/Inscribed Floodmask';
-    try {
-      const Data = await this.ctx.curl(url, {
-        dataType: 'json',
-        headers: Header,
-      });
-      return Data;
-    } catch (err) {
-      return err;
-    }
+const cheerio=require('cheerio');
+class SteamService extends Service {
+  async steamGetPrice(query) {
+    let arr = [];
+    await Promise.all(query.map(async (item,index) => {
+        await (this.sleep(50));
+        try {
+          let Data = await this.ctx.curl(item.url, { headers: this.config.steamHeader });
+          let data = JSON.stringify(Data.data);
+          let html = Buffer.from(JSON.parse(data).data).toString();
+          let $ = cheerio.load(html);
+          let script = $('script');
+          let len = script.length;
+          let str = script.get()[len - 1].children[0].data;
+          let id = str.split('Market_LoadOrderSpread')[1].trim().split(')')[0].split('(')[1].trim();
+          let priceUrl = 'https://steamcommunity.com/market/itemordershistogram?country=CN&currency=23&two_factor=0&language=schinese&item_nameid=' + id
+          let priceInfo = await this.ctx.curl(priceUrl, { dataType: 'json' });
+          if (priceInfo.status === 200 && priceInfo.data) {
+            arr.push({
+              name: item.name,
+              index: item.index,
+              steamBuyPrice: priceInfo.data.buy_order_graph[0][0]
+            });
+          } else {
+            console.log(item.name + ' 获取steam求购价格失败');
+          }
+        } catch (error) {
+          console.log(item.name + ' 获取steam求购价格失败');
+        }
+    }))
+    return arr;
+  }
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
 
-module.exports = GoodsService;
+module.exports = SteamService;

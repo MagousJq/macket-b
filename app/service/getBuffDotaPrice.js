@@ -111,7 +111,7 @@ class GoodsService extends Service {
         buffMinPrice: e.buffMinPrice,
         steamMinPrice: e.steamMinPrice,
         sellNum: e.sellNum,
-        time: Time[Time.length - 1].date,
+        time: Time[Time.length - 1].date
       };
     });
     return list;

@@ -29,6 +29,12 @@ module.exports = appInfo => {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
   }
 
+  config.steamHeader = {
+    cookie: 'timezoneOffset=28800,0; _ga=GA1.2.1541168044.1565621508; steamMachineAuth76561198356612681=1BFD39242F80687963F2E84AC9E30D84487FEAAB; browserid=1112872047488513233; steamRememberLogin=76561198356612681%7C%7Cf85cd94f9f9c27acd54e1c757f653cff; sessionid=8e01789a75d9320dc5f9dd3b; webTradeEligibility=%7B%22allowed%22%3A1%2C%22allowed_at_time%22%3A0%2C%22steamguard_required_days%22%3A15%2C%22new_device_cooldown_days%22%3A7%2C%22time_checked%22%3A1573092646%7D; _gid=GA1.2.1702873617.1573437760; steamLoginSecure=76561198356612681%7C%7C11D00143145671A04697FFB41A8BA8724053A281',
+    'Accept-Language': 'zh,zh-CN;q=0.9,en;q=0.8',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36'
+  }
+
   config.urlList = {
     buffCsgo: 'https://buff.163.com/api/market/goods?game=csgo&sort_by=price.desc&page_num=',
     buffDota: 'https://buff.163.com/api/market/goods?game=dota2&sort_by=price.desc&page_num=',

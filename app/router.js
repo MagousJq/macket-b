@@ -12,7 +12,7 @@ module.exports = app => {
   router.post('/dota/store', controller.getBuffPrice.dotaStore);
   router.get('/dota/canBuy', controller.getBuffPrice.dotaCanBuy);
   router.get('/dota/canSell', controller.getBuffPrice.dotaCanSell);
-  router.get('/steam', controller.getSteamPrice.steamPrice);
+  router.post('/steam/getPrice', controller.getSteamPrice.steamPrice);
   router.post('/igxe/csgo/store', controller.getIGXEPrice.csgoStore);
   router.get('/igxe/csgo/canBuy', controller.getIGXEPrice.csgoCanBuy);
   router.get('/igxe/csgo/canUse', controller.getIGXEPrice.csgoCanUse);
