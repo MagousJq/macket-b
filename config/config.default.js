@@ -19,8 +19,8 @@ module.exports = appInfo => {
   config.middleware = [];
 
   // 请求频率
-  config.frequency = 400;
-  config.igxeFrequency = 500;
+  config.frequency = 800;
+  config.igxeFrequency = 1000;
 
   config.header = 
   {
