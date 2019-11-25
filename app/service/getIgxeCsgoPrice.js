@@ -66,13 +66,13 @@ class GoodsService extends Service {
           dateId: Time.length ? Time[Time.length - 1]._id : null,
           steamMinPrice: { $lte: 8000, $gte: 0 },
           igxeMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
-          igxeSellNum: { $gte: parseInt(query.sellNum) }
+          igxeSellNum: { $gte: parseInt(query.sellNum) },
+          goodsName: { $regex : query.name }
         }
       }
     ]);
     list = list.filter(item =>
       item.steamMinPrice / item.igxeMinPrice >= 2
-      && item.goodsName.indexOf(query.name) > -1
     );
     list = list.slice(0, 300);
     list.sort((a, b) => {
@@ -100,14 +100,14 @@ class GoodsService extends Service {
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 2000, $gt: 0 },
-          igxeMinPrice: { $gt: 0.5 },
-          buffMinPrice: { $gt: 0.5 }
+          steamMinPrice: { $lte: 3000, $gt: 0 },
+          igxeMinPrice: { $gt: 0.3 },
+          buffMinPrice: { $gt: 0.3 }
         }
       }
     ]);
     list = list.filter(item =>
-      item.buffBuyPrice > item.igxeMinPrice 
+      item.buffBuyPrice * 0.975 - item.igxeMinPrice > 0.4
       // item.igxeMinPrice < item.buffMinPrice && 
       // item.buffMinPrice / item.igxeMinPrice <= 2 && 
       // item.igxeMinPrice / item.buffBuyPrice <= 1.5 && 
@@ -120,6 +120,14 @@ class GoodsService extends Service {
     //   return (b.buffMinPrice - b.igxeMinPrice) - (a.buffMinPrice - a.igxeMinPrice);
     // });
     list = list.slice(0, 300);
+    //查重
+    // let a = await this.ctx.model.Csgoex.aggregate([
+    //   {"$group" : { "_id": "$goodsName", "count": { "$sum": 1 } } },
+    //   {"$match": {"_id" :{ "$ne" : null } , "count" : {"$gt": 1} } }, 
+    //   {"$sort": {"count" : -1} },
+    //   {"$project": {"name" : "$_id", "_id" : 0} }  
+    // ]);
+    // console.log(a)
     list = list.map(e => {
       return {
         id: e._id,

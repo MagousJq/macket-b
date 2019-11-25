@@ -83,14 +83,14 @@ class GoodsService extends Service {
           dateId: Time.length ? Time[Time.length - 1]._id : null,
           steamMinPrice: { $lte: 8000, $gte: 0 },
           buffMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
-          sellNum: { $gte: parseInt(query.sellNum) }
+          sellNum: { $gte: parseInt(query.sellNum) },
+          goodsName: { $regex : query.name }
         }
       }
     ]);
     list = list.filter(item =>
       // 修改筛选条件处
       item.steamMinPrice / item.buffMinPrice >= 2
-      && item.goodsName.indexOf(query.name) > -1
       && item.goodsName.indexOf('签名') === -1
       && item.goodsName.indexOf('传世') === -1
       && item.goodsName.indexOf('铭刻') === -1

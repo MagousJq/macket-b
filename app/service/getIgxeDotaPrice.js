@@ -61,13 +61,13 @@ class GoodsService extends Service {
           dateId: Time.length ? Time[Time.length - 1]._id : null,
           steamMinPrice: { $lte: 8000, $gte: 0 },
           igxeMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
-          igxeSellNum: { $gte: parseInt(query.sellNum) }
+          igxeSellNum: { $gte: parseInt(query.sellNum) },
+          goodsName: { $regex : query.name }
         }
       }
     ]);
     list = list.filter(item =>
       item.steamMinPrice / item.igxeMinPrice >= 2
-      && item.goodsName.indexOf(query.name) > -1
       && item.goodsName.indexOf('传世') === -1
       && item.goodsName.indexOf('冥灵') === -1
       && item.goodsName.indexOf('签名') === -1
@@ -134,19 +134,26 @@ class GoodsService extends Service {
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 2000, $gt: 0 },
-          igxeMinPrice: { $gt: 0.5 },
-          buffMinPrice: { $gt: 0.5 }
+          steamMinPrice: { $lte: 3000, $gt: 0 },
+          igxeMinPrice: { $gt: 0.3 },
+          buffMinPrice: { $gt: 0.3 }
         }
       }
     ]);
     list = list.filter(item =>
-      item.buffBuyPrice > item.igxeMinPrice 
+      item.buffBuyPrice * 0.98 - item.igxeMinPrice > 0.4
     );
     list.sort((a, b) => {
       return (b.buffBuyPrice * 0.98 - b.igxeMinPrice) - (a.buffBuyPrice * 0.975 - a.igxeMinPrice);
     });
     list = list.slice(0, 300);
+    // let a = await this.ctx.model.Dota.aggregate([
+    //   {"$group" : { "_id": "$goodsName", "count": { "$sum": 1 } } },
+    //   {"$match": {"_id" :{ "$ne" : null } , "count" : {"$gt": 1} } }, 
+    //   {"$sort": {"count" : -1} },
+    //   {"$project": {"name" : "$_id", "_id" : 0} }  
+    // ]);
+    // console.log(a)
     list = list.map(e => {
       return {
         id: e._id,
