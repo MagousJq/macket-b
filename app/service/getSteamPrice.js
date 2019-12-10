@@ -32,7 +32,9 @@ class SteamService extends Service {
           err++;
         }
     }))
-    console.log(err.length + '条steam商品求购价获取失败')
+    if(err){
+      console.log(err + '条steam商品求购价获取失败');
+    }
     return arr;
   }
   sleep(ms) {
