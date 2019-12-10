@@ -107,18 +107,11 @@ class GoodsService extends Service {
       }
     ]);
     list = list.filter(item =>
-      item.buffBuyPrice * 0.975 - item.igxeMinPrice > 0.4
-      // item.igxeMinPrice < item.buffMinPrice && 
-      // item.buffMinPrice / item.igxeMinPrice <= 2 && 
-      // item.igxeMinPrice / item.buffBuyPrice <= 1.5 && 
-      // item.sellNum > 5 
+      parseFloat(item.buffBuyPrice) * 0.975 - parseFloat(item.igxeMinPrice) > 0.4
     );
     list.sort((a, b) => {
-      return (b.buffBuyPrice * 0.975 - b.igxeMinPrice) - (a.buffBuyPrice * 0.975 - a.igxeMinPrice);
+      return (parseFloat(b.buffBuyPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.975 - parseFloat(a.igxeMinPrice));
     });
-    // list.sort((a, b) => {
-    //   return (b.buffMinPrice - b.igxeMinPrice) - (a.buffMinPrice - a.igxeMinPrice);
-    // });
     list = list.slice(0, 300);
     //查重
     // let a = await this.ctx.model.Csgoex.aggregate([

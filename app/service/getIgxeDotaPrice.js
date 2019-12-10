@@ -49,9 +49,11 @@ class GoodsService extends Service {
         }, (err) => {});
       });
     }
+    let time = new Date()
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + len);
     console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
+    console.log(time.getHours() + ':' + time.getMinutes());
   }
   async canBuy(query) {
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
@@ -141,10 +143,10 @@ class GoodsService extends Service {
       }
     ]);
     list = list.filter(item =>
-      item.buffBuyPrice * 0.98 - item.igxeMinPrice > 0.4
+      parseFloat(item.buffBuyPrice) * 0.98 - parseFloat(item.igxeMinPrice) > 0.4
     );
     list.sort((a, b) => {
-      return (b.buffBuyPrice * 0.98 - b.igxeMinPrice) - (a.buffBuyPrice * 0.975 - a.igxeMinPrice);
+      return (parseFloat(b.buffBuyPrice) * 0.98 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.98 - parseFloat(a.igxeMinPrice));
     });
     list = list.slice(0, 300);
     // let a = await this.ctx.model.Dota.aggregate([

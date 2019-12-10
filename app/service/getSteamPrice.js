@@ -4,6 +4,7 @@ const Service = require('egg').Service;
 const cheerio=require('cheerio');
 class SteamService extends Service {
   async steamGetPrice(query) {
+    let err = 0;
     let arr = [];
     await Promise.all(query.map(async (item,index) => {
         await (this.sleep(50));
@@ -25,12 +26,13 @@ class SteamService extends Service {
               steamBuyPrice: priceInfo.data.buy_order_graph[0][0]
             });
           } else {
-            console.log(item.name + ' 获取steam求购价格失败');
+            err++;
           }
         } catch (error) {
-          console.log(item.name + ' 获取steam求购价格失败');
+          err++;
         }
     }))
+    console.log(err.length + '条steam商品求购价获取失败')
     return arr;
   }
   sleep(ms) {

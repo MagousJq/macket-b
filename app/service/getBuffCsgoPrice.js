@@ -89,7 +89,7 @@ class GoodsService extends Service {
       }
     ]);
     list = list.filter(item =>
-      item.steamMinPrice / item.buffMinPrice >= 2
+      parseFloat(item.steamMinPrice) / parseFloat(item.buffMinPrice) >= 2
     );
     list = list.slice(0, 200);
     // list = list.filter((item, index) => {
@@ -117,16 +117,16 @@ class GoodsService extends Service {
   }
   async canSell() {
     const query = {
-      maxPrice: 50,
-      minPrice: 0.7,
-      sellNum: 20
+      maxPrice: 100,
+      minPrice: 0.3,
+      sellNum: 10
     }
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
     let list = await this.ctx.model.Csgoex.aggregate([
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 300, $gte: 0 },
+          steamMinPrice: { $lte: 400, $gte: 0 },
           buffMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
           sellNum: { $gte: parseInt(query.sellNum) }
         }
@@ -144,7 +144,7 @@ class GoodsService extends Service {
       // item.goodsName.indexOf('AWP') > -1||
       // item.goodsName.indexOf('沙漠之鹰') > -1)
     );
-    list = list.slice(0, 3000);
+    list = list.slice(0, 1000);
     list = list.filter((item, index) => {
       return !list.slice(index + 1).some(e => {
         return e.goodsName === item.goodsName;
