@@ -117,7 +117,7 @@ class GoodsService extends Service {
   }
   async canSell() {
     const query = {
-      maxPrice: 100,
+      maxPrice: 300,
       minPrice: 0.3,
       sellNum: 10
     }
@@ -126,14 +126,14 @@ class GoodsService extends Service {
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 400, $gte: 0 },
+          steamMinPrice: { $lte: 800, $gte: 0 },
           buffMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
           sellNum: { $gte: parseInt(query.sellNum) }
         }
       }
     ]);
     list = list.filter(item =>
-      item.buffMinPrice / item.steamMinPrice <= 4
+      item.buffMinPrice / item.steamMinPrice <= 300
       && item.buffMinPrice / item.steamMinPrice >= 0.8
       && item.goodsName.indexOf('印花') === -1
       && item.goodsName.indexOf('涂鸦') === -1

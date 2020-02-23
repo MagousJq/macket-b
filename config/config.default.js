@@ -1,6 +1,14 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
+let igxeKnife = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8C%95%E9%A6%96&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=5&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no='
+let igxeAutoGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%AD%A5%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=4&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no='
+let igxeHandGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%89%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=1&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no='
+let igxeMicroGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%BE%AE%E5%9E%8B%E5%86%B2%E9%94%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=3&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no='
+let igxeShotGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E9%87%8D%E5%9E%8B%E6%AD%A6%E5%99%A8&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=2&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no='
+let igxePic = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8D%B0%E8%8A%B1&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=8&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no='
+let igxeGloves = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=13&is_buying=0&ctg_name=%E6%89%8B%E5%A5%97&page_no='
+let igxeMusicBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=9&is_buying=0&ctg_name=%E9%9F%B3%E4%B9%90%E7%9B%92&page_no='
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -20,7 +28,7 @@ module.exports = appInfo => {
 
   // 请求频率
   config.frequency = 800;
-  config.igxeFrequency = 1000;
+  config.igxeFrequency = 800;
 
   config.header = 
   {
@@ -40,8 +48,40 @@ module.exports = appInfo => {
     buffCsgo: 'https://buff.163.com/api/market/goods?game=csgo&sort_by=price.desc&page_size=400&page_num=',
     buffDota: 'https://buff.163.com/api/market/goods?game=dota2&sort_by=price.desc&page_size=400&page_num=',
     igxeCsgo: 'https://www.igxe.cn/csgo/730?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.3&price_to=2000&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1569832685927&page_no=',
-    igxeDota: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.2&price_to=60&sort=1&ctg_id=0&type_id=0&page_size=50&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570504967919&page_no=',
-    igxeDotaBeta: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.2&price_to=300&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no='
+    igxeDotaBeta: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.2&price_to=300&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no=',
+    igxeCsKinds: [{
+      url: igxeKnife,
+      pages: 11,
+      name: '匕首'
+    }, {
+      url: igxeAutoGun,
+      pages: 11,
+      name: '步枪'
+    }, {
+      url: igxeHandGun,
+      pages: 10,
+      name: '手枪'
+    }, {
+      url: igxeMicroGun,
+      pages: 8,
+      name: '微冲'
+    }, {
+      url: igxeShotGun,
+      pages: 5,
+      name: '霰弹枪'
+    }, {
+      url: igxePic,
+      pages: 17,
+      name: '贴纸'
+    }, {
+      url: igxeGloves,
+      pages: 2,
+      name: '手套'
+    }, {
+      url: igxeMusicBox,
+      pages: 1,
+      name: '音乐盒'
+    }]
   };
 
   // add your user config here

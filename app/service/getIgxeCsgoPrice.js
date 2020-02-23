@@ -8,38 +8,44 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
     let Arr = [];
-    for (let i = 1; i < 26; i++) {
-      console.log('IGXE-CSGO页数:' + i);
-      await (this.sleep(this.config.igxeFrequency));
-      try {
-        let arr = []; 
-        const Data = await this.ctx.curl(this.config.urlList.igxeCsgo + i);
-        let data = JSON.stringify(Data.data);
-        let html = Buffer.from(JSON.parse(data).data).toString();
-        let kinds = ['崭新出场','略有磨损','久经沙场','站痕累累','破损不堪'];
-        let $ = cheerio.load(html);
-        let dataList=$('.dataList');
-        dataList.children().each(function(index) {
-          let str = $(this).text().replace(/\n/g, '').trim();
-          if(kinds.some(item => str.indexOf(str) !== -1)){
-            let len = str.length;
-            str = str.slice(5, len);
-          }
-          let name = str.split(' ￥ ')[0].trim();
-          let price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
-          let count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
-          arr[index] = {
-            // igxeId: '',
-            goodsName: name,
-            igxeMinPrice: price,
-            igxeSellNum: count,
-          }
-        })
-        Arr = Arr.concat(arr);
-      } catch (err) {
-        // console.log(err)
-        Error.push(i);
-      }
+    let igxeCsKindsLen = this.config.urlList.igxeCsKinds.length
+    for (let j = 0; j < igxeCsKindsLen; j++){
+      let item = this.config.urlList.igxeCsKinds[j]
+      for (let i = 1; i <= item.pages; i++) {
+        console.log('IGXE-CSGO-' + item.name + '-页码:' + i);
+        await (this.sleep(this.config.igxeFrequency));
+        try {
+          let arr = []; 
+          const Data = await this.ctx.curl(item.url + i);
+          let data = JSON.stringify(Data.data);
+          let html = Buffer.from(JSON.parse(data).data).toString();
+          let kinds = ['崭新出场','略有磨损','久经沙场','站痕累累','破损不堪'];
+          let $ = cheerio.load(html);
+          let dataList=$('.dataList');
+          dataList.children().each(function(index) {
+            let str = $(this).text().replace(/\n/g, '').trim();
+            if(kinds.some(item => str.indexOf(str) !== -1)){
+              let len = str.length;
+              if(str.indexOf('音乐盒') === -1){
+                str = str.slice(5, len);
+              }
+            }
+            let name = str.split(' ￥ ')[0].trim();
+            let price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
+            let count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
+            arr[index] = {
+              // igxeId: '',
+              goodsName: name,
+              igxeMinPrice: price,
+              igxeSellNum: count,
+            }
+          })
+          Arr = Arr.concat(arr);
+        } catch (err) {
+          // console.log(err)
+          Error.push(i);
+        }
+      } 
     }
     const len = Error.length;
     if(Arr.length > 0){
@@ -106,8 +112,14 @@ class GoodsService extends Service {
         }
       }
     ]);
+    // list = list.filter(item =>
+    //   parseFloat(item.buffBuyPrice) * 0.975 - parseFloat(item.igxeMinPrice) > 0.2
+    // );
     list = list.filter(item =>
-      parseFloat(item.buffBuyPrice) * 0.975 - parseFloat(item.igxeMinPrice) > 0.4
+      parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
+      // && item.goodsName.indexOf('AK') >= 0
+      // && item.goodsName.indexOf('久经') >= 0
+      && item.igxeMinPrice >= 1
     );
     list.sort((a, b) => {
       return (parseFloat(b.buffBuyPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.975 - parseFloat(a.igxeMinPrice));
