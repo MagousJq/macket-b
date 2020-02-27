@@ -32,7 +32,7 @@ module.exports = appInfo => {
 
   config.header = 
   {
-    cookie: 'csrf_token=821f5bd4bf0d3b615b1b6b749c5abe8f6f599a59; session=1-VX49LPsLWxGglWLnjt5wUEt2TVRJsdgZknvyVcPC25ka2043302330; _ga=GA1.2.1845526731.1553570207; _gid=GA1.2.54596602.1553570207; _gat_gtag_UA_109989484_1=1',
+    cookie: 'csrf_token=821f5bd4bf0d3b615b1b6b749c5abe8f6f599a59; session=1-HVdOqjNLPf5dfOj5P8D7usGT7-qEuk5u5t-GHG74h5HF2043302330; _ga=GA1.2.1845526731.1553570207; _gid=GA1.2.54596602.1553570207; _gat_gtag_UA_109989484_1=1',
     Connection: 'keep-alive',
     Accept: 'application/json, text/javascript, */*; q=0.01',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',

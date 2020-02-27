@@ -19,7 +19,7 @@ class GoodsService extends Service {
           const Data = await this.ctx.curl(item.url + i);
           let data = JSON.stringify(Data.data);
           let html = Buffer.from(JSON.parse(data).data).toString();
-          let kinds = ['崭新出场','略有磨损','久经沙场','站痕累累','破损不堪'];
+          let kinds = ['崭新出场','略有磨损','久经沙场','战痕累累','破损不堪','无涂装'];
           let $ = cheerio.load(html);
           let dataList=$('.dataList');
           dataList.children().each(function(index) {
@@ -106,9 +106,9 @@ class GoodsService extends Service {
       {
         $match:{ 
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 3000, $gt: 0 },
-          igxeMinPrice: { $gt: 0.3 },
-          buffMinPrice: { $gt: 0.3 }
+          steamMinPrice: { $gt: 0 },
+          igxeMinPrice: { $lte: 5000, $gt: 0.3 },
+          buffMinPrice: { $lte: 5000, $gt: 0.3 }
         }
       }
     ]);
@@ -116,10 +116,10 @@ class GoodsService extends Service {
     //   parseFloat(item.buffBuyPrice) * 0.975 - parseFloat(item.igxeMinPrice) > 0.2
     // );
     list = list.filter(item =>
-      parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
-      // && item.goodsName.indexOf('AK') >= 0
+      parseFloat(item.buffBuyPrice) - parseFloat(item.igxeMinPrice) > 0
+      // && item.goodsName.indexOf('音乐') >= 0
       // && item.goodsName.indexOf('久经') >= 0
-      && item.igxeMinPrice >= 1
+      && item.igxeMinPrice >= 0.3
     );
     list.sort((a, b) => {
       return (parseFloat(b.buffBuyPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.975 - parseFloat(a.igxeMinPrice));
