@@ -6,7 +6,7 @@ class UpdateData extends Subscription {
     return {
       interval: '180m', // 1 小时间隔
       type: 'worker', // 只要一个worker执行
-      immediate: true
+      immediate: true,
     };
   }
 
