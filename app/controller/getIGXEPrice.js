@@ -10,7 +10,7 @@ class GoodsController extends Controller {
     const { ctx } = this;
     ctx.service.getIgxeCsgoPrice.getTotalData();
     this.success({
-      data: '请查看后台日志，看页数是否全部完成'
+      data: '请查看后台日志，看页数是否全部完成',
     });
   }
   async csgoCanBuy() {
@@ -25,14 +25,19 @@ class GoodsController extends Controller {
   }
   async csgoCanUse() {
     const { ctx } = this;
-    const res = await ctx.service.getIgxeCsgoPrice.canUse();
+    const query = this.ctx.query;
+    query.minPrice = query.minPrice || 0.2;
+    query.maxPrice = query.maxPrice || 600;
+    query.name = query.name || '';
+    query.sellNum = query.sellNum || 1;
+    const res = await ctx.service.getIgxeCsgoPrice.canUse(query);
     this.success(res);
   }
   async dotaStore() {
     const { ctx } = this;
     ctx.service.getIgxeDotaPrice.getTotalData();
     this.success({
-      data: '请查看后台日志，看页数是否全部完成'
+      data: '请查看后台日志，看页数是否全部完成',
     });
   }
   async dotaCanBuy() {
