@@ -14,7 +14,7 @@ class UpdateData extends Subscription {
   async subscribe() {
     const csgoTotal = await this.ctx.service.getBuffCsgoPrice.getTotalPage();
     const dotaTotal = await this.ctx.service.getBuffDotaPrice.getTotalPage();
-    if (csgoTotal) {
+    if (csgoTotal && dotaTotal) {
       await this.ctx.service.getBuffCsgoPrice.store(csgoTotal);
       await this.ctx.service.getIgxeCsgoPrice.getTotalData();
 

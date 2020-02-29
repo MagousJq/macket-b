@@ -25,11 +25,9 @@ class GoodsService extends Service {
           dataList.children().each(function(index) {
             let str = $(this).text().replace(/\n/g, '')
               .trim();
-            if (kinds.some(item => str.indexOf(str) !== -1)) {
+            if (kinds.some(item => str.indexOf(item) !== -1)) {
               const len = str.length;
-              if (str.indexOf('音乐盒') === -1) {
-                str = str.slice(5, len);
-              }
+              str = str.slice(5, len);
             }
             const name = str.split(' ￥ ')[0].trim();
             const price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
@@ -119,9 +117,9 @@ class GoodsService extends Service {
     //   parseFloat(item.buffBuyPrice) * 0.975 - parseFloat(item.igxeMinPrice) > 0.2
     // );
     list = list.filter(item =>
-      parseFloat(item.buffBuyPrice) - parseFloat(item.igxeMinPrice) > 0
+      parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
       // && item.goodsName.indexOf('AK') >= 0
-      // && item.goodsName.indexOf('久经') >= 0
+      // && item.goodsName.indexOf('刀') >= 0
       && item.igxeMinPrice >= 0.4
     );
     list.sort((a, b) => {

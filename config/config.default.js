@@ -9,6 +9,8 @@ const igxeShotGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E9%87%8D%E5%9E%8B%E6
 const igxePic = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8D%B0%E8%8A%B1&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=8&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
 const igxeGloves = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=13&is_buying=0&ctg_name=%E6%89%8B%E5%A5%97&page_no=';
 const igxeMusicBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=9&is_buying=0&ctg_name=%E9%9F%B3%E4%B9%90%E7%9B%92&page_no=';
+const igxeGraffiti = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=11&is_buying=0&ctg_name=%E6%B6%82%E9%B8%A6&page_no=';
+const igxeBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=6&is_buying=0&ctg_name=%E7%AE%B1%E5%AD%90&page_no='
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -81,7 +83,15 @@ module.exports = appInfo => {
       url: igxeMusicBox,
       pages: 1,
       name: '音乐盒',
-    }],
+    },{
+      url: igxeGraffiti,
+      pages: 8,
+      name: '涂鸦'
+    },{
+      url: igxeBox,
+      pages: 1,
+      name: '箱子'
+    }]
   };
 
   // add your user config here
