@@ -41,7 +41,7 @@ class GoodsService extends Service {
           });
           Arr = Arr.concat(arr);
         } catch (err) {
-          // console.log(err)
+          console.log('初次失败:第' + i + '页')
           Error.push(i);
         }
       }
@@ -79,10 +79,10 @@ class GoodsService extends Service {
     list = list.filter(item =>
       item.steamMinPrice / item.igxeMinPrice >= 2
     );
-    list = list.slice(0, 300);
     list.sort((a, b) => {
       return b.steamMinPrice / b.igxeMinPrice - a.steamMinPrice / a.igxeMinPrice;
     });
+    list = list.slice(0, 300);
     list = list.map(e => {
       return {
         id: e._id,
@@ -113,14 +113,32 @@ class GoodsService extends Service {
         },
       },
     ]);
+    // 售价直接比较
     // list = list.filter(item =>
-    //   parseFloat(item.buffBuyPrice) * 0.975 - parseFloat(item.igxeMinPrice) > 0.2
+    //   parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
+    //   && item.goodsName.indexOf('印花') === -1
+    //   && parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) < 1000
     // );
+    // list.sort((a, b) => {
+    //   return (parseFloat(b.buffMinPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffMinPrice) * 0.975 - parseFloat(a.igxeMinPrice));
+    // });
+    // buff比价
+    // list = list.filter(item =>
+    //   parseFloat(item.igxeMinPrice) - parseFloat(item.buffMinPrice) > 0
+    //   && item.goodsName.indexOf('印花') === -1
+    //   && parseFloat(item.igxeMinPrice) - parseFloat(item.buffMinPrice) < 40
+    //   && parseFloat(item.buffMinPrice) > 1
+    //   && parseFloat(item.buffMinPrice) < 300
+    //   && item.igxeSellNum > 10
+    // );
+    // list.sort((a, b) => {
+    //   return (parseFloat(b.igxeMinPrice) * 0.975 - parseFloat(b.buffMinPrice)) - (parseFloat(a.igxeMinPrice) * 0.975 - parseFloat(a.buffMinPrice));
+    // });
+    // normal
     list = list.filter(item =>
       parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
-      // && item.goodsName.indexOf('AK') >= 0
-      // && item.goodsName.indexOf('刀') >= 0
-      && item.igxeMinPrice >= 0.4
+      // && item.goodsName.indexOf('印花') === -1
+      && item.igxeMinPrice >= 0.3
     );
     list.sort((a, b) => {
       return (parseFloat(b.buffBuyPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.975 - parseFloat(a.igxeMinPrice));

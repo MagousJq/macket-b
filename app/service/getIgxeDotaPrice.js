@@ -8,33 +8,44 @@ class GoodsService extends Service {
     const Error = [];
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });
     let Arr = [];
-    for (let i = 1; i < 26; i++) {
-      console.log('IGXE-DOTA2页数:' + i);
-      await (this.sleep(this.config.igxeFrequency));
-      try {
-        let arr = []; 
-        const Data = await this.ctx.curl(this.config.urlList.igxeDotaBeta + i);
-        let data = JSON.stringify(Data.data);
-        let html = Buffer.from(JSON.parse(data).data).toString();
-        let $ = cheerio.load(html);
-        let dataList=$('.dataList');
-        dataList.children().each(function(index) {
-          let str = $(this).text().replace(/\n/g, '').trim();
-          let name = str.split(' ￥ ')[0].trim();
-          let price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
-          let count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
-          arr[index] = {
-            // igxeId: '',
-            goodsName: name,
-            igxeMinPrice: price,
-            igxeSellNum: count,
-          }
-        })
-        Arr = Arr.concat(arr);
-      } catch (err) {
-        // console.log(err)
-        Error.push(i);
-      }
+    let list = [{
+        total: 26,
+        url: this.config.urlList.igxeDotaBeta
+      },
+      {
+        total: 7,
+        url: this.config.urlList.igxeDotaPro
+      },
+    ]
+    for (let j = 0; j < 2; j++) {
+      for(let i = 1; i < list[j].total; i++){
+        console.log('IGXE-DOTA2页数:' + i);
+        await (this.sleep(this.config.igxeFrequency));
+        try {
+          let arr = []; 
+          const Data = await this.ctx.curl(list[j].url + i);
+          let data = JSON.stringify(Data.data);
+          let html = Buffer.from(JSON.parse(data).data).toString();
+          let $ = cheerio.load(html);
+          let dataList=$('.dataList');
+          dataList.children().each(function(index) {
+            let str = $(this).text().replace(/\n/g, '').trim();
+            let name = str.split(' ￥ ')[0].trim();
+            let price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
+            let count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
+            arr[index] = {
+              // igxeId: '',
+              goodsName: name,
+              igxeMinPrice: price,
+              igxeSellNum: count,
+            }
+          })
+          Arr = Arr.concat(arr);
+        } catch (err) {
+          console.log('初次失败:' + i)
+          Error.push(i);
+        }
+      }        
     }
     const len = Error.length;
     if(Arr.length > 0){
@@ -143,7 +154,7 @@ class GoodsService extends Service {
       }
     ]);
     list = list.filter(item =>
-      parseFloat(item.buffBuyPrice) * 0.98 - parseFloat(item.igxeMinPrice) > 0.4
+      parseFloat(item.buffBuyPrice) * 0.98 - parseFloat(item.igxeMinPrice) > 0.3
     );
     list.sort((a, b) => {
       return (parseFloat(b.buffBuyPrice) * 0.98 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.98 - parseFloat(a.igxeMinPrice));

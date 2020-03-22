@@ -17,7 +17,7 @@ class GoodsController extends Controller {
     const { ctx } = this;
     const query = this.ctx.query;
     query.minPrice = query.minPrice || 0.2;
-    query.maxPrice = query.maxPrice || 600;
+    query.maxPrice = query.maxPrice || 1000;
     query.name = query.name || '';
     query.sellNum = query.sellNum || 1;
     const res = await ctx.service.getIgxeCsgoPrice.canBuy(query);
@@ -27,7 +27,7 @@ class GoodsController extends Controller {
     const { ctx } = this;
     const query = this.ctx.query;
     query.minPrice = query.minPrice || 0.2;
-    query.maxPrice = query.maxPrice || 600;
+    query.maxPrice = query.maxPrice || 4000;
     query.name = query.name || '';
     query.sellNum = query.sellNum || 1;
     const res = await ctx.service.getIgxeCsgoPrice.canUse(query);
@@ -44,7 +44,7 @@ class GoodsController extends Controller {
     const { ctx } = this;
     const query = this.ctx.query;
     query.minPrice = query.minPrice || 0.2;
-    query.maxPrice = query.maxPrice || 60;
+    query.maxPrice = query.maxPrice || 100;
     query.name = query.name || '';
     query.sellNum = query.sellNum || 1;
     const res = await ctx.service.getIgxeDotaPrice.canBuy(query);
@@ -54,7 +54,7 @@ class GoodsController extends Controller {
     const { ctx } = this;
     const query = this.ctx.query;
     query.minPrice = query.minPrice || 0.2;
-    query.maxPrice = query.maxPrice || 60;
+    query.maxPrice = query.maxPrice || 1000;
     query.name = query.name || '';
     query.sellNum = query.sellNum || 1;
     const res = await ctx.service.getIgxeDotaPrice.spread(query);

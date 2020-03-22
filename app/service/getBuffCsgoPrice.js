@@ -35,6 +35,8 @@ class GoodsService extends Service {
           error++;
         }
       } catch (err) {
+        console.log('初次失败:第' + i + '页');
+        await (this.sleep(this.config.frequency));
         Error.push(i);
       }
     }

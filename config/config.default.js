@@ -29,8 +29,8 @@ module.exports = appInfo => {
   config.middleware = [];
 
   // 请求频率
-  config.frequency = 800;
-  config.igxeFrequency = 800;
+  config.frequency = 1000;
+  config.igxeFrequency = 1000;
 
   config.header =
   {
@@ -51,6 +51,7 @@ module.exports = appInfo => {
     buffDota: 'https://buff.163.com/api/market/goods?game=dota2&sort_by=price.desc&page_size=400&page_num=',
     igxeCsgo: 'https://www.igxe.cn/csgo/730?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.3&price_to=2000&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1569832685927&page_no=',
     igxeDotaBeta: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.2&price_to=300&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no=',
+    igxeDotaPro: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=19&price_to=200&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no=',
     igxeCsKinds: [{
       url: igxeKnife,
       pages: 11,
