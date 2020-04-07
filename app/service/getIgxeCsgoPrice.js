@@ -59,9 +59,11 @@ class GoodsService extends Service {
         }, err => {});
       });
     }
+    let time = new Date()
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + len);
     console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
+    console.log(time.getHours() + ':' + time.getMinutes());
   }
   async canBuy(query) {
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });

@@ -91,11 +91,11 @@ class GoodsService extends Service {
     list = list.filter(item =>
       // 修改筛选条件处
       item.steamMinPrice / item.buffMinPrice >= 2
-      && item.goodsName.indexOf('签名') === -1
-      && item.goodsName.indexOf('传世') === -1
-      && item.goodsName.indexOf('铭刻') === -1
-      && item.goodsName.indexOf('吉祥') === -1
-      && item.goodsName.indexOf('冥灵') === -1
+      // && item.goodsName.indexOf('签名') === -1
+      // && item.goodsName.indexOf('传世') === -1
+      // && item.goodsName.indexOf('铭刻') === -1
+      // && item.goodsName.indexOf('吉祥') === -1
+      // && item.goodsName.indexOf('冥灵') === -1
     );
     list.sort((a, b) => {
       return b.steamMinPrice / b.buffMinPrice - a.steamMinPrice / a.buffMinPrice;
