@@ -30,7 +30,7 @@ module.exports = appInfo => {
 
   // 请求频率
   config.frequency = 1000;
-  config.igxeFrequency = 1000;
+  config.igxeFrequency = 1500;
 
   config.header =
   {
@@ -54,7 +54,7 @@ module.exports = appInfo => {
     igxeDotaPro: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=19&price_to=200&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no=',
     igxeCsKinds: [{
       url: igxeKnife,
-      pages: 11,
+      pages: 10,
       name: '匕首',
     }, {
       url: igxeAutoGun,
