@@ -16,7 +16,9 @@ class GoodsService extends Service {
         await (this.sleep(this.config.igxeFrequency));
         try {
           const arr = [];
-          const Data = await this.ctx.curl(item.url + i);
+          const Data = await this.ctx.curl(item.url + i,{
+            headers: this.config.igxeHeader
+          });
           let data = JSON.stringify(Data.data);
           let html = Buffer.from(JSON.parse(data).data).toString();
           let kinds = ['崭新出场','略有磨损','久经沙场','战痕累累','破损不堪','无涂装'];
@@ -41,6 +43,7 @@ class GoodsService extends Service {
           });
           Arr = Arr.concat(arr);
         } catch (err) {
+          console.log(err)
           console.log('初次失败:第' + i + '页')
           Error.push(i);
         }

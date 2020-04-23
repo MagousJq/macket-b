@@ -35,7 +35,10 @@ class SteamService extends Service {
     if (err) {
       console.log(err + '条steam商品求购价获取失败');
     }
-    return arr;
+    return {
+      arr,
+      err
+    };
   }
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
