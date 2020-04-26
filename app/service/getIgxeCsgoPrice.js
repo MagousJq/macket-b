@@ -32,6 +32,7 @@ class GoodsService extends Service {
               str = str.slice(5, len);
             }
             const name = str.split(' ￥ ')[0].trim();
+            // console.log(name)
             const price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
             const count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
             arr[index] = {

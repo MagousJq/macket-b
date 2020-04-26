@@ -30,7 +30,8 @@ class GoodsService extends Service {
           let dataList=$('.dataList');
           dataList.children().each(function(index) {
             let str = $(this).text().replace(/\n/g, '').trim();
-            let name = str.split(' ￥ ')[0].trim();
+            let name = str.split(' ￥ ')[0];
+            name = name.slice(2, name.length).trim()
             let price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
             let count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
             arr[index] = {

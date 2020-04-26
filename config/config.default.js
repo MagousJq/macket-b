@@ -30,7 +30,7 @@ module.exports = appInfo => {
 
   // 请求频率
   config.frequency = 1000;
-  config.igxeFrequency = 3000;
+  config.igxeFrequency = 2000;
 
   config.header =
   {

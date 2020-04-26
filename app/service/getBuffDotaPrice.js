@@ -166,6 +166,9 @@ class GoodsService extends Service {
         buffBuyPrice: item.buy_max_price,
         buffMinPrice: item.sell_min_price,
         sellNum: item.sell_num,
+        igxeSellNum: 0,
+        igxeMinPrice: 0,
+        igxeId: null,
         dateId: id,
       };
     });
