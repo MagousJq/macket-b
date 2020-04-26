@@ -4,7 +4,7 @@ class UpdateData extends Subscription {
   // 通过 schedule 属性来设置定时任务的执行间隔等配置
   static get schedule() {
     return {
-      interval: '300m', // 1 小时间隔
+      interval: '30000h',
       type: 'worker', // 只要一个worker执行
       immediate: true,
     };
