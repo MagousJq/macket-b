@@ -1,5 +1,6 @@
 'use strict';
 
+const moment = require('moment');
 const Service = require('egg').Service;
 class GoodsService extends Service {
   async getTotalPage() {
@@ -184,6 +185,7 @@ class GoodsService extends Service {
         buffId: e.buffId,
         goodsName: e.goodsName,
         steamMarketUrl: e.steamMarketUrl,
+        buffBuyPrice: e.buffBuyPrice,
         igxeMinPrice: e.igxeMinPrice,
         buffMinPrice: e.buffMinPrice,
         steamMinPrice: e.steamMinPrice,
@@ -192,6 +194,150 @@ class GoodsService extends Service {
       };
     });
     return list;
+  }
+  async storeAvaKnifePrice() { 
+    const now = moment().format('YYYY-MM-DD');
+    const query = {
+      name: '刀|剑|匕|手套 |裹手',
+      maxPrice: 4000,
+      minPrice: 300,
+      sellNum: 20
+    }
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
+    let list = await this.ctx.model.Csgoex.aggregate([
+      {
+        $match:{ 
+          dateId: Time.length ? Time[Time.length - 1]._id : null,
+          buffMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
+          sellNum: { $gte: parseInt(query.sellNum) },
+          goodsName: { $regex: query.name },
+        }
+      }
+    ]);
+    list = list.filter((item, index) => {
+      return !list.slice(index + 1).some(e => {
+        return e.goodsName === item.goodsName;
+      });
+    });
+    let Error = [];
+    // console.log(list.length)
+    // list = list.slice(0, 1);
+    let listLen = list.length;
+    for (let i = 0; i < listLen; i++) {
+      console.log('导入-' + list[i].goodsName);
+      await (this.sleep(this.config.frequency));
+      try {
+        let avaPrice = 0, len = 0;
+        const ava = this.formatAvaPrice(list[i].buffMinPrice);
+        const Data = await this.ctx.curl(this.config.urlList.knifeAva + list[i].buffId, {
+          dataType: 'json',
+          headers: this.config.knifeHeader,
+        });
+        if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
+          Data.data.data.price_history.forEach(item => {
+            if(item[1] >= list[i].buffMinPrice - ava && item[1] <= list[i].buffMinPrice + ava){
+              avaPrice += parseFloat(item[1]);
+              len++;
+            }
+          })
+          avaPrice = parseFloat((avaPrice/len).toFixed(2));
+          this.ctx.model.CsgoKnife.updateOne({
+            buffId: list[i].buffId,
+          },
+          {
+            date: now,
+            goodsName: list[i].goodsName,
+            buffId: list[i].buffId,
+            avaPrice: avaPrice
+          },
+          {
+            upsert: true,
+          }, err => {});
+        } else {
+          console.log(Data);
+          return;
+        }
+      } catch (err) {
+        console.log(err);
+        Error.push(list[i]);
+      }
+      if(i === listLen - 1){
+        console.log('初次导入完成')
+      }
+    }
+    for (let i = 0; i < Error.length; i++) {
+      console.log('再次导入-' + Error[i].goodsName);
+      await (this.sleep(this.config.frequency));
+      try {
+        let avaPrice = 0, len = 0;
+        const ava = this.formatAvaPrice(Error[i].buffMinPrice);
+        const Data = await this.ctx.curl(this.config.urlList.knifeAva + Error[i].buffId, {
+          dataType: 'json',
+          headers: this.config.knifeHeader,
+        });
+        if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
+          Data.data.data.price_history.forEach(item => {
+            if(item[1] >= Error[i].buffMinPrice - ava && item[1] <= Error[i].buffMinPrice + ava){
+              avaPrice += parseFloat(item[1]);
+              len++;
+            }
+          })
+          avaPrice = parseFloat((avaPrice/len).toFixed(2));
+          this.ctx.model.CsgoKnife.updateOne({
+            buffId: Error[i].buffId,
+          },
+          {
+            date: now,
+            goodsName: Error[i].goodsName,
+            buffId: Error[i].buffId,
+            avaPrice: avaPrice
+          },
+          {
+            upsert: true,
+          }, err => {});
+        }
+      } catch (err) {
+        console.log(Error[i].goodsName + ' 导入失败')
+        console.log(err);
+      }
+    }
+    return mes;
+  }
+  async getAvaKnifePrice(){
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
+    let list = await this.ctx.model.CsgoKnife.aggregate([
+      {
+        $lookup:{ 
+          from: 'csgoexes',
+          localField: 'goodsName',
+          foreignField: 'goodsName',
+          as: 'newGoods'
+        }
+      }
+    ]);
+    list = list.map(item => {
+      let node = item.newGoods[0]
+      return {
+        time: Time[Time.length - 1].date,
+        buffId: item.buffId,
+        avaPrice: item.avaPrice,
+        goodsName: item.goodsName,
+        steamMinPrice: node.steamMinPrice,
+        steamMarketUrl: node.steamMarketUrl,
+        buffMinPrice: node.buffMinPrice,
+        buffBuyPrice: node.buffBuyPrice,
+        sellNum: node.sellNum,
+        igxeSellNum: node.igxeSellNum,
+        igxeMinPrice: node.igxeMinPrice
+      };
+    })
+    list = list.filter(item =>
+      parseFloat(item.buffMinPrice) < parseFloat(item.avaPrice)
+    );
+    list.sort((a, b) => {
+      return (parseFloat(a.buffMinPrice) - parseFloat(a.avaPrice)) - (parseFloat(b.buffMinPrice) - parseFloat(b.avaPrice));
+    });
+    return list.slice(0, 100);
   }
   format(data, id) {
     return data.map(item => {
@@ -209,6 +355,9 @@ class GoodsService extends Service {
         igxeId: null
       };
     });
+  }
+  formatAvaPrice(val){
+    return (parseInt(val / 1000) + 1) * 100
   }
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));

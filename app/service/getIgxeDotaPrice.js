@@ -13,7 +13,7 @@ class GoodsService extends Service {
         url: this.config.urlList.igxeDotaBeta
       },
       {
-        total: 7,
+        total: 10,
         url: this.config.urlList.igxeDotaPro
       },
     ]

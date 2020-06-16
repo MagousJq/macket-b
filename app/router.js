@@ -7,6 +7,8 @@ module.exports = app => {
   const { router, controller } = app;
   router.get('/', controller.getBuffPrice.login);
   router.post('/csgo/store', controller.getBuffPrice.csgoStore);
+  router.post('/csgo/storeAavKnife', controller.getBuffPrice.storeAvaKnifePrice);
+  router.get('/csgo/buyAavKnife', controller.getBuffPrice.buyAvaKnifePrice);
   router.get('/csgo/canBuy', controller.getBuffPrice.csgoCanBuy);
   router.get('/csgo/canSell', controller.getBuffPrice.csgoCanSell);
   router.post('/dota/store', controller.getBuffPrice.dotaStore);

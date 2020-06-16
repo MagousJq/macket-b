@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('./base_controller');
+const moment = require('moment');
 
 class GoodsController extends Controller {
   async login() {
@@ -33,6 +34,28 @@ class GoodsController extends Controller {
     const { ctx } = this;
     const res = await ctx.service.getBuffCsgoPrice.canSell();
     this.success(res);
+  }
+  async storeAvaKnifePrice(){
+    const { ctx } = this;
+    let res = '';
+    const now = moment().format('YYYY-MM-DD');
+    let arr = await ctx.model.CsgoKnife.find();
+    if(arr.length && arr[0].date === now){
+      res = '今日数据已载入过，无须再次载入'
+    }else{
+      ctx.service.getBuffCsgoPrice.storeAvaKnifePrice();
+      res = '后台录入中...';
+    }
+    this.success({
+      data: res
+    });
+  }
+  async buyAvaKnifePrice(){
+    const { ctx } = this;
+    const res = await ctx.service.getBuffCsgoPrice.getAvaKnifePrice();
+    this.success({
+      data: res
+    });
   }
   async dotaStore() {
     const { ctx } = this;

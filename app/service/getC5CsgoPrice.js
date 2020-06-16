@@ -69,14 +69,14 @@ class GoodsService extends Service {
       type: 'CSGO',
     });
     this.format(Arr, theDate._id).forEach(item => {
-      this.ctx.model.Csgo.create(item);
+      this.ctx.model.Csgoex.create(item);
     });
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + error);
   }
   async canBuy() {
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgo.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
+    let list = await this.ctx.model.Csgoex.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
     list = list.filter(item =>
       item.steamMinPrice < 200
       && item.steamMinPrice > 0
@@ -111,7 +111,7 @@ class GoodsService extends Service {
   }
   async canSell() {
     const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgo.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
+    let list = await this.ctx.model.Csgoex.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
     list = list.filter(item =>
       item.steamMinPrice < 100
       && item.steamMinPrice > 0

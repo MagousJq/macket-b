@@ -17,11 +17,12 @@ class GoodsService extends Service {
         try {
           const arr = [];
           const Data = await this.ctx.curl(item.url + i,{
-            headers: this.config.igxeHeader
+            headers: this.config.igxeHeader,
+            timeout: 3000
           });
           let data = JSON.stringify(Data.data);
           let html = Buffer.from(JSON.parse(data).data).toString();
-          let kinds = ['崭新出场','略有磨损','久经沙场','战痕累累','破损不堪','无涂装'];
+          let kinds = ['崭新出厂','略有磨损','久经沙场','战痕累累','破损不堪','无涂装','高级','普通级'];
           let $ = cheerio.load(html);
           let dataList=$('.dataList');
           dataList.children().each(function(index) {
@@ -31,8 +32,7 @@ class GoodsService extends Service {
               const len = str.length;
               str = str.slice(5, len);
             }
-            const name = str.split(' ￥ ')[0].trim();
-            // console.log(name)
+            let name = str.split(' ￥ ')[0].trim();
             const price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
             const count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
             arr[index] = {
@@ -44,7 +44,7 @@ class GoodsService extends Service {
           });
           Arr = Arr.concat(arr);
         } catch (err) {
-          console.log(err)
+          // console.log(err)
           console.log('初次失败:第' + i + '页')
           Error.push(i);
         }
@@ -122,8 +122,12 @@ class GoodsService extends Service {
     // 售价直接比较
     // list = list.filter(item =>
     //   parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
-    //   && item.goodsName.indexOf('印花') === -1
-    //   && parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) < 1000
+    //   && item.goodsName.indexOf('印花') === -1 
+    //   && item.sellNum > 10
+    //   && item.igxeSellNum > 10
+    //   && item.goodsName.indexOf('StatTrak') === -1 
+    //   && parseFloat(item.igxeMinPrice) > 0
+    //   && parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) < 800
     // );
     // list.sort((a, b) => {
     //   return (parseFloat(b.buffMinPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffMinPrice) * 0.975 - parseFloat(a.igxeMinPrice));
