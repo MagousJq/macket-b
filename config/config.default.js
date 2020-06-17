@@ -33,7 +33,7 @@ module.exports = appInfo => {
   config.igxeFrequency = 2000;
 
   let session1 = '1-8nMtb6JV0a-IsWPtr4pDJp0adDQcr2cSZY3lH3wHyxP22043302330'
-  let session2 = ''
+  let session2 = '1-wpuRnQC4nnRce8CMr3rwxxFpEV7y1iekt-hKVsm0xiru2045759776'
   config.header =
   {
     cookie: 'csrf_token=821f5bd4bf0d3b615b1b6b749c5abe8f6f599a59; session='+session1+'; _ga=GA1.2.1845526731.1553570207; _gid=GA1.2.54596602.1553570207; _gat_gtag_UA_109989484_1=1',

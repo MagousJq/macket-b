@@ -301,7 +301,6 @@ class GoodsService extends Service {
         console.log(err);
       }
     }
-    return mes;
   }
   async getAvaKnifePrice(){
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
@@ -335,7 +334,7 @@ class GoodsService extends Service {
       parseFloat(item.buffMinPrice) < parseFloat(item.avaPrice)
     );
     list.sort((a, b) => {
-      return (parseFloat(a.buffMinPrice) - parseFloat(a.avaPrice)) - (parseFloat(b.buffMinPrice) - parseFloat(b.avaPrice));
+      return (parseFloat(a.buffMinPrice) - parseFloat(a.avaPrice) * 0.975) - (parseFloat(b.buffMinPrice) - parseFloat(b.avaPrice) * 0.975);
     });
     return list.slice(0, 100);
   }
