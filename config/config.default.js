@@ -50,24 +50,6 @@ module.exports = appInfo => {
   ]
   // session列表，要有10个以上
   config.sessionList = [
-    '1-lC1dIqt6e3ifoxqnL-sZGe5gm9jxcXbqt2K_30c1WIUo2043272402',
-    '1-AjreA95usD8139cBrE6mwVYQtdg_2Ge9MoOc6TgtsEXv2040612628',
-    '1-RbkZQN_-LuR7kTFcDzU-cIMcpMGQe_ALs8uplQERyE1M2043593525',
-    '1-RikiGR7nED5F8_oC0c1tnWXWNBgJbUxoWbbQ--tPkxV62040533720',
-    '1-TDLW2mBp_T83wHA5m_mPU-Dho6ElEQIwyWoAtKuvmP8r2043381512',
-    '1-kplfUkWwH99DYFMOhh3jB3eebOpIA3upp-mnaZc-7hso2040612643',
-    '1-D-xYTVbAH87mSSXg3xpuJHMR_A0b1kCBIlpbvglRuHxJ2041043810',
-    '1-nZIuR8kAyrsA1kqiMSqcsWgec2WMj9RsYnPZQ_gjLFFE2043223341',
-    '1-eG__PD_EBRbChTIOhrBKiXwKUL7qyXtkefVJDGrzDoKQ2041038337',
-    '1-uEx9Aejz05KqMKVhQC6E2pfs05utrJDQ981Udk4gD7Cp2041038402',
-    '1-HCyXu77NUQIaxbpNwmUVyCDcO9StPcBOOdRXBs4Lju0A2041038423',
-    '1-MPCu56RtMk8Sd1s3-4g-GqD7cRWcl9oCcXod-U1nOuA-2043586554',
-    '1-7uHkcdY_XvYsaYJo8RSl5TMfk7DXDrLCFsZaaaPvEINa2043274142',
-    '1-ygQDfwmo3pV8kHZjre1ErV9sSUL8FBP3vPuS8Ow17mYI2043586956',
-    '1-99pZrTUu1-kcRFoiqvMnlIeu-UZkEc9hj2GzWV4eq4B12043586537',
-    '1-2_GkuZi0fyKvixpHb5O-gmf61smj-uzgsksQ7VmL9WFR2041038521',
-    '1-iK7VsylAVhpzFqLUELfzADvuelx8_HjSFSy2SjcmHWrw2041038532',
-    '1-ucw4cQS4hRSCYh-Jsb8p_eHsJEm6fdw6tZ9n7QqIKQge2041038558'
   ]
 
   config.multipart = {
