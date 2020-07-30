@@ -2,42 +2,46 @@
 
 const Service = require('egg').Service;
 const cheerio = require('cheerio');
+const request = require('superagent');
+require('superagent-proxy')(request);
+const fakeUa = require('fake-useragent');
 class SteamService extends Service {
   async steamGetPrice(query) {
-    let err = 0;
+    let error = 0;
     const arr = [];
+    let flag = true
     await Promise.all(query.map(async (item, index) => {
       await (this.sleep(50));
-      try {
-        const Data = await this.ctx.curl(item.url, { headers: this.config.steamHeader });
-        const data = JSON.stringify(Data.data);
-        const html = Buffer.from(JSON.parse(data).data).toString();
-        const $ = cheerio.load(html);
-        const script = $('script');
-        const len = script.length;
-        const str = script.get()[len - 1].children[0].data;
-        const id = str.split('Market_LoadOrderSpread')[1].trim().split(')')[0].split('(')[1].trim();
-        const priceUrl = 'https://steamcommunity.com/market/itemordershistogram?country=CN&currency=23&two_factor=0&language=schinese&item_nameid=' + id;
-        const priceInfo = await this.ctx.curl(priceUrl, { dataType: 'json' });
-        if (priceInfo.status === 200 && priceInfo.data) {
-          arr.push({
-            name: item.name,
-            index: item.index,
-            steamBuyPrice: priceInfo.data.buy_order_graph[0][0],
-          });
-        } else {
-          err++;
-        }
-      } catch (error) {
-        err++;
+      if(flag){
+        try {
+          let headers = this.config.steamHeader
+          headers['User-Agent'] = fakeUa()
+          const Data = await request.get(item.url).set(headers).timeout(10000);
+          const html = Buffer.from(Data.text).toString();
+          const $ = cheerio.load(html);
+          const script = $('script');
+          const len = script.length;
+          const str = script.get()[len - 1].children[0].data;
+          const id = str.split('Market_LoadOrderSpread')[1].trim().split(')')[0].split('(')[1].trim();
+          if(id){
+            const priceUrl = 'https://steamcommunity.com/market/itemordershistogram?country=CN&currency=23&two_factor=0&language=schinese&item_nameid=' + id;
+            const priceInfo = await request.get(priceUrl).set(headers).timeout(10000);
+            if (priceInfo.status === 200 && priceInfo.text) {
+              arr.push({
+                name: item.name,
+                index: item.index,
+                steamBuyPrice: JSON.parse(priceInfo.text).buy_order_graph[0][0],
+              });
+            }else{ error++ }
+          }else{
+            error++
+          }
+        } catch (err) { error++ }
       }
     }));
-    if (err) {
-      console.log(err + '条steam商品求购价获取失败');
-    }
     return {
       arr,
-      err
+      error
     };
   }
   sleep(ms) {

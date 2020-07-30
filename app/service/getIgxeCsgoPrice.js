@@ -2,6 +2,10 @@
 
 const Service = require('egg').Service;
 const cheerio = require('cheerio');
+const request = require('superagent');
+require('superagent-proxy')(request);
+const sharp = require('sharp');
+const fakeUa = require('fake-useragent');
 
 class GoodsService extends Service {
   async getTotalData() {
@@ -16,12 +20,10 @@ class GoodsService extends Service {
         await (this.sleep(this.config.igxeFrequency));
         try {
           const arr = [];
-          const Data = await this.ctx.curl(item.url + i,{
-            headers: this.config.igxeHeader,
-            timeout: 3000
-          });
-          let data = JSON.stringify(Data.data);
-          let html = Buffer.from(JSON.parse(data).data).toString();
+          let headers = this.config.igxeHeader
+          headers['User-Agent'] = fakeUa()
+          const Data = await request.get(item.url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+          let html = Buffer.from(Data.text).toString();
           let kinds = ['崭新出厂','略有磨损','久经沙场','战痕累累','破损不堪','无涂装','高级','普通级'];
           let $ = cheerio.load(html);
           let dataList=$('.dataList');
@@ -44,8 +46,8 @@ class GoodsService extends Service {
           });
           Arr = Arr.concat(arr);
         } catch (err) {
-          // console.log(err)
-          console.log('初次失败:第' + i + '页')
+          console.log(err)
+          console.log('导入失败:第' + i + '页')
           Error.push(i);
         }
       }
@@ -69,13 +71,66 @@ class GoodsService extends Service {
     console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
     console.log(time.getHours() + ':' + time.getMinutes());
   }
+  async getCheapData() {
+    const Error = [];
+    const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
+    let Arr = [];
+    const url = 'https://www.igxe.cn/svip/igb_sale_product?app_id=730&product_category_id=&product_type_id=&tags_exterior_id=&tags_rarity_id=&tags_quality_id=&sort_key=1&sort_rule=2&market_name=&page_no='
+    let headers = this.config.igxeCheapHeader
+    headers['User-Agent'] = fakeUa()
+    const res = await request.get(url + 1).proxy(this.config.proxy[0]).set(headers);
+    if(res.status !== 200 || !res.text || !JSON.parse(res.text).rows){
+      console.log('igxe的session过期')
+      return 
+    }
+    const l = JSON.parse(res.text).pager.page_count
+    for (let i = 1; i <= l; i++) {
+      console.log('IGXE-CSGO-页码:' + i);
+      await (this.sleep(this.config.igxeCheapFrequency));
+      try {
+        let headers = this.config.igxeCheapHeader
+        headers['User-Agent'] = fakeUa()
+        const res = await request.get(url + i).proxy(this.config.proxy[0]).set(headers);
+        Arr = Arr.concat(JSON.parse(res.text).rows.map(item => {
+          return {
+            goodsName: item.market_name,
+            igxeCheapPrice: (parseFloat(item.unit_price) - parseFloat(item.svip_voucher_money)).toFixed(2),
+          }
+        }));
+      } catch (err) {
+        // console.log(err)
+        console.log('导入失败:第' + i + '页')
+        Error.push(i);
+      }
+    }
+    // console.log(Arr)
+    if (Arr.length > 0) {
+      Arr.forEach(item => {
+        this.ctx.model.Csgoex.updateOne({
+          dateId: Time.length ? Time[Time.length - 1]._id : null,
+          goodsName: item.goodsName,
+        },
+        item,
+        {
+          upsert: false,
+        }, err => {
+          // console.log(err)
+        });
+      });
+    }
+    let time = new Date()
+    console.log('导入数据：' + Arr.length + '条');
+    console.log('失败次数:' + Error.length);
+    console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
+    console.log(time.getHours() + ':' + time.getMinutes());
+  }
   async canBuy(query) {
     const Time = await this.ctx.model.Time.find({ type: 'Csgoex' });
     let list = await this.ctx.model.Csgoex.aggregate([
       {
         $match: {
           dateId: Time.length ? Time[Time.length - 1]._id : null,
-          steamMinPrice: { $lte: 8000, $gte: 0 },
+          steamMinPrice: { $lte: 10000, $gte: 0 },
           igxeMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
           igxeSellNum: { $gte: parseInt(query.sellNum) },
           goodsName: { $regex: query.name },
@@ -83,7 +138,7 @@ class GoodsService extends Service {
       },
     ]);
     list = list.filter(item =>
-      item.steamMinPrice / item.igxeMinPrice >= 2
+      item.steamMinPrice / item.igxeMinPrice > 2
     );
     list.sort((a, b) => {
       return b.steamMinPrice / b.igxeMinPrice - a.steamMinPrice / a.igxeMinPrice;
@@ -112,7 +167,7 @@ class GoodsService extends Service {
         $match: {
           dateId: Time.length ? Time[Time.length - 1]._id : null,
           steamMinPrice: { $gt: 0 },
-          buffMinPrice: { $lte: 3000, $gt: 0.3 },
+          buffMinPrice: { $lte: 20000, $gt: 0.1 },
           igxeMinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
           igxeSellNum: { $gte: parseInt(query.sellNum) },
           goodsName: { $regex: query.name },
@@ -145,15 +200,21 @@ class GoodsService extends Service {
     //   return (parseFloat(b.igxeMinPrice) * 0.975 - parseFloat(b.buffMinPrice)) - (parseFloat(a.igxeMinPrice) * 0.975 - parseFloat(a.buffMinPrice));
     // });
     // normal
-    list = list.filter(item =>
-      parseFloat(item.buffMinPrice) - parseFloat(item.igxeMinPrice) > 0
+    list = list.filter(item =>{
+      let price = 0
+      if(item.igxeCheapPrice){
+        price = parseFloat(item.igxeMinPrice) > parseFloat(item.igxeCheapPrice) ? parseFloat(item.igxeCheapPrice) : parseFloat(item.igxeMinPrice)
+      }else{
+        price = parseFloat(item.igxeMinPrice)
+      }
+      item.igxeMinPrice = price
+      return parseFloat(item.buffMinPrice) - parseFloat(price) > 0
       // && item.goodsName.indexOf('印花') === -1
-      && item.igxeMinPrice >= 0.3
-    );
+    });
     list.sort((a, b) => {
       return (parseFloat(b.buffBuyPrice) * 0.975 - parseFloat(b.igxeMinPrice)) - (parseFloat(a.buffBuyPrice) * 0.975 - parseFloat(a.igxeMinPrice));
     });
-    list = list.slice(0, 300);
+    list = list.slice(0, 200);
     // 查重
     // let a = await this.ctx.model.Csgoex.aggregate([
     //   {"$group" : { "_id": "$goodsName", "count": { "$sum": 1 } } },
@@ -191,6 +252,14 @@ class GoodsService extends Service {
   }
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async test(file){
+    await sharp(file.filepath).resize(120, null).toFile('output.png').then(data => {
+      return data
+    });
+    // fs.createReadStream(file.filepath)
+    // .pipe(roundedCornerResizer)
   }
 }
 

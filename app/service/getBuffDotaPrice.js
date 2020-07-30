@@ -1,68 +1,54 @@
 'use strict';
 
 const Service = require('egg').Service;
+const request = require('superagent');
+require('superagent-proxy')(request);
+const fakeUa = require('fake-useragent');
 class GoodsService extends Service {
   async getTotalPage() {
     try {
-      const Data = await this.ctx.curl(this.config.urlList.buffDota + 2, {
-        dataType: 'json',
-        headers: this.config.header,
-      });
-      if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
-        return Data.data.data.total_page;
+      let headers = this.config.header
+      headers['User-Agent'] = fakeUa()
+      headers['cookie'] = 'session=' + this.config.sessionList[0] + ';'
+      const Data = await request.get(this.config.urlList.buffDota + 274).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 6000 });
+      if (Data.status === 200 && Data.text && JSON.parse(Data.text).code === 'OK') {
+        return JSON.parse(Data.text).data.total_page;
       }
+      console.log(Data.text);
+      console.log('这个session过期:' + this.config.sessionList[0])
       return 0;
     } catch (err) {
+      console.log('可能这个session过期:' + this.config.sessionList[0] + ',或者这个代理IP有问题:' + this.config.proxy[0] + ',当然也可能都没问题的,报错原因是：')
+      console.log(err)
       return 0;
     }
   }
   async store(total) {
-    const now = new Date();
     let Arr = [];
-    const Error = [];
-    let error = 0;
-    for (let i = 1; i < total - 1; i++) {
-      console.log('BUFF-DOTA2页数:' + i);
+    let errors = 0;
+    let pages = [];
+    const now = new Date();
+    for(let i=1; i<=total; i++){
+      pages.push(i)
+    }
+    pages.sort(function(){
+      return Math.random() - 0.5;
+    })
+    pages.sort(function(){
+      return Math.random() - 0.5;
+    })
+    const slen = this.config.sessionList.length
+    const pieces = Math.ceil(pages.length / slen)
+    for(let i = 1; i <= pieces; i++){
+      let Obj = await this.getBuffOnePage(pages.slice((i-1)*slen, i*slen))
+      errors += Obj.errors
+      Arr = Arr.concat(Obj.data)
       await (this.sleep(this.config.frequency));
-      try {
-        const Data = await this.ctx.curl(this.config.urlList.buffDota + i, {
-          dataType: 'json',
-          headers: this.config.header,
-        });
-        if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
-          Arr = Arr.concat(Data.data.data.items);
-        } else {
-          error++;
-        }
-      } catch (err) {
-        Error.push(i);
-      }
     }
     try {
       await this.ctx.model.Dota.deleteMany();
     } catch (error) { 
       console.log(error);
-    }
-    const len = Error.length;
-    if (len) {
-      await (this.sleep(1000));
-    }
-    for (let i = 0; i < len; i++) {
-      await (this.sleep(this.config.frequency));
-      try {
-        const Data = await this.ctx.curl(this.config.urlList.buffDota + Error[i], {
-          dataType: 'json',
-          headers: this.config.header,
-        });
-        if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
-          Arr = Arr.concat(Data.data.data.items);
-        } else {
-          error++;
-        }
-      } catch (err) {
-        error++;
-        console.log('失败页数：' + Error[i]);
-      }
     }
     const theDate = await this.ctx.model.Time.create({
       date: now,
@@ -73,7 +59,38 @@ class GoodsService extends Service {
       this.ctx.model.Dota.create(item);
     });
     console.log('导入数据：' + Arr.length + '条');
-    console.log('失败次数:' + error);
+    console.log('失败总页数：' + errors + '页');
+  }
+  async getBuffOnePage(page){
+    let Arr = []
+    let errors = 0
+    for(let i = 0;i < page.length; i++){
+      let index = i
+      if(i >= this.config.proxy.length - 1){
+        index = this.config.proxy.length - 1
+      }
+      try {
+        console.log('导入buff-dota，页码为:', page[i])
+        let headers = this.config.header
+        headers['User-Agent'] = fakeUa()
+        headers['cookie'] = 'session=' + this.config.sessionList[i] + ';'
+        const Data = await request.get(this.config.urlList.buffDota + page[i]).proxy(this.config.proxy[index]).set(headers).timeout({ deadline: 6000 });;
+        if (Data.status === 200 && Data.text && JSON.parse(Data.text).code === 'OK') {
+          Arr = Arr.concat(JSON.parse(Data.text).data.items);
+        } else { 
+          errors++
+          console.log('失败:第' + page[i] + '页', 'session为: ' + this.config.sessionList[i], '代理IP为:' + this.config.proxy[index]);
+        }
+      } catch (err) {
+        errors++
+        console.log('失败:第' + page[i] + '页', 'session为: ' + this.config.sessionList[i], '代理IP为:' + this.config.proxy[index]);;
+        console.log('错误原因:', err);
+      }
+    }
+    return {
+      data: Arr,
+      errors
+    }
   }
   async canBuy(query) {
     const Time = await this.ctx.model.Time.find({ type: 'DOTA2' });

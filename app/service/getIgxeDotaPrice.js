@@ -2,6 +2,9 @@
 
 const Service = require('egg').Service;
 const cheerio=require('cheerio');
+const request = require('superagent');
+require('superagent-proxy')(request);
+const fakeUa = require('fake-useragent');
 
 class GoodsService extends Service {
   async getTotalData() {
@@ -19,13 +22,18 @@ class GoodsService extends Service {
     ]
     for (let j = 0; j < 2; j++) {
       for(let i = 1; i < list[j].total; i++){
-        console.log('IGXE-DOTA2页数:' + i);
+        console.log('IGXE-DOTA页数:' + i);
         await (this.sleep(this.config.igxeFrequency));
         try {
           let arr = []; 
-          const Data = await this.ctx.curl(list[j].url + i);
-          let data = JSON.stringify(Data.data);
-          let html = Buffer.from(JSON.parse(data).data).toString();
+          let headers = this.config.igxeHeader
+          headers['User-Agent'] = fakeUa()
+          let headers = this.config.igxeHeader
+          const Data = await this.ctx.curl(list[j].url + i,{
+            headers
+          });
+          const Data = await request.get(item.url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+          let html = Buffer.from(Data.text).toString();
           let $ = cheerio.load(html);
           let dataList=$('.dataList');
           dataList.children().each(function(index) {
@@ -43,7 +51,8 @@ class GoodsService extends Service {
           })
           Arr = Arr.concat(arr);
         } catch (err) {
-          console.log('初次失败:' + i)
+          console.log(err)
+          console.log('导入失败:' + i)
           Error.push(i);
         }
       }        

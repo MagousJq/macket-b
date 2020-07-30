@@ -1,6 +1,7 @@
 /* eslint valid-jsdoc: "off" */
 
 'use strict';
+
 const igxeKnife = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8C%95%E9%A6%96&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=5&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
 const igxeAutoGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%AD%A5%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=4&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
 const igxeHandGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%89%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=1&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
@@ -23,28 +24,77 @@ module.exports = appInfo => {
   const config = {};
 
   // use for cookie sign key, should change to your own and keep security
-  config.keys = appInfo.name + '_1553507734596_7059';
+  config.keys = appInfo.name + '_1553507734526_7059';
 
   // add your middleware config here
   config.middleware = [];
 
   // 请求频率
-  config.frequency = 1000;
-  config.igxeFrequency = 2000;
+  config.frequency = 5000;
+  config.igxeFrequency = 1000;
+  config.igxeCheapFrequency = 3000;
 
-  let session1 = '1-8nMtb6JV0a-IsWPtr4pDJp0adDQcr2cSZY3lH3wHyxP22043302330'
-  let session2 = '1-wpuRnQC4nnRce8CMr3rwxxFpEV7y1iekt-hKVsm0xiru2045759776'
+  // 代理IP，要至少有10个
+  config.proxy = [
+    'http://58.220.95.79:10000',
+    'http://58.220.95.80:9401',
+    'http://58.220.95.78:9401',
+    'http://58.220.95.78:9401',
+    'http://221.122.91.75:10286',
+    'http://58.220.95.54:9400',
+    'http://150.138.253.71:808',
+    'http://183.220.145.3:80',
+    'http://58.220.95.30:10174',
+    'http://58.220.95.80:9401'
+
+  ]
+  // session列表，要有10个以上
+  config.sessionList = [
+    '1-lC1dIqt6e3ifoxqnL-sZGe5gm9jxcXbqt2K_30c1WIUo2043272402',
+    '1-AjreA95usD8139cBrE6mwVYQtdg_2Ge9MoOc6TgtsEXv2040612628',
+    '1-RbkZQN_-LuR7kTFcDzU-cIMcpMGQe_ALs8uplQERyE1M2043593525',
+    '1-RikiGR7nED5F8_oC0c1tnWXWNBgJbUxoWbbQ--tPkxV62040533720',
+    '1-TDLW2mBp_T83wHA5m_mPU-Dho6ElEQIwyWoAtKuvmP8r2043381512',
+    '1-kplfUkWwH99DYFMOhh3jB3eebOpIA3upp-mnaZc-7hso2040612643',
+    '1-D-xYTVbAH87mSSXg3xpuJHMR_A0b1kCBIlpbvglRuHxJ2041043810',
+    '1-nZIuR8kAyrsA1kqiMSqcsWgec2WMj9RsYnPZQ_gjLFFE2043223341',
+    '1-eG__PD_EBRbChTIOhrBKiXwKUL7qyXtkefVJDGrzDoKQ2041038337',
+    '1-uEx9Aejz05KqMKVhQC6E2pfs05utrJDQ981Udk4gD7Cp2041038402',
+    '1-HCyXu77NUQIaxbpNwmUVyCDcO9StPcBOOdRXBs4Lju0A2041038423',
+    '1-MPCu56RtMk8Sd1s3-4g-GqD7cRWcl9oCcXod-U1nOuA-2043586554',
+    '1-7uHkcdY_XvYsaYJo8RSl5TMfk7DXDrLCFsZaaaPvEINa2043274142',
+    '1-ygQDfwmo3pV8kHZjre1ErV9sSUL8FBP3vPuS8Ow17mYI2043586956',
+    '1-99pZrTUu1-kcRFoiqvMnlIeu-UZkEc9hj2GzWV4eq4B12043586537',
+    '1-2_GkuZi0fyKvixpHb5O-gmf61smj-uzgsksQ7VmL9WFR2041038521',
+    '1-iK7VsylAVhpzFqLUELfzADvuelx8_HjSFSy2SjcmHWrw2041038532',
+    '1-ucw4cQS4hRSCYh-Jsb8p_eHsJEm6fdw6tZ9n7QqIKQge2041038558'
+  ]
+
+  config.multipart = {
+    mode: 'file'
+  }
+
+  // let session1 = '1-C2PStwwxNy8QlFPzTsLGyYVWJFmFAmZMweifNd7iDLow2043274142'
+  // let session2 = '1-jeKPIBxiaZsftzoh5TL2b8T6wxlTOIcjtbhtaQe-rtBg2045759776'
   config.header =
   {
-    cookie: 'csrf_token=821f5bd4bf0d3b615b1b6b749c5abe8f6f599a59; session='+session1+'; _ga=GA1.2.1845526731.1553570207; _gid=GA1.2.54596602.1553570207; _gat_gtag_UA_109989484_1=1',
+    cookie: '',
     Connection: 'keep-alive',
     Accept: 'application/json, text/javascript, */*; q=0.01',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
   };
 
-  config.knifeHeader =
+  // config.knifeHeader =
+  // {
+  //   cookie: 'session='+session2+';',
+  //   Connection: 'keep-alive',
+  //   Accept: 'application/json, text/javascript, */*; q=0.01',
+  //   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
+  // };
+
+  config.igxeCheapHeader =
   {
-    cookie: 'csrf_token=821f5bd4bf0d3b615b1b6b749c5abe8f6f599a59; session='+session2+'; _ga=GA1.2.1845526731.1553570207; _gid=GA1.2.54596602.1553570207; _gat_gtag_UA_109989484_1=1',
+    cookie: 'sessionid=wav09gfmk706pakhfmnvumiw508hc2rn;',
     Connection: 'keep-alive',
     Accept: 'application/json, text/javascript, */*; q=0.01',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
@@ -57,15 +107,14 @@ module.exports = appInfo => {
   };
 
   config.steamHeader = {
-    cookie: 'timezoneOffset=28800,0; _ga=GA1.2.1541168044.1565621508; steamMachineAuth76561198356612681=1BFD39242F80687963F2E84AC9E30D84487FEAAB; browserid=1112872047488513233; steamRememberLogin=76561198356612681%7C%7Cf85cd94f9f9c27acd54e1c757f653cff; sessionid=8e01789a75d9320dc5f9dd3b; webTradeEligibility=%7B%22allowed%22%3A1%2C%22allowed_at_time%22%3A0%2C%22steamguard_required_days%22%3A15%2C%22new_device_cooldown_days%22%3A7%2C%22time_checked%22%3A1573092646%7D; _gid=GA1.2.1702873617.1573437760; steamLoginSecure=76561198356612681%7C%7C11D00143145671A04697FFB41A8BA8724053A281',
     'Accept-Language': 'zh,zh-CN;q=0.9,en;q=0.8',
     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.87 Safari/537.36',
   };
 
   config.urlList = {
-    buffCsgo: 'https://buff.163.com/api/market/goods?game=csgo&sort_by=price.desc&page_size=400&page_num=',
+    buffCsgo: 'https://buff.163.com/api/market/goods?game=csgo&sort_by=price.desc&page_size=80&page_num=',
     knifeAva: 'https://buff.163.com/api/market/goods/price_history/buff?game=csgo&currency=CNY&goods_id=',
-    buffDota: 'https://buff.163.com/api/market/goods?game=dota2&sort_by=price.desc&page_size=400&page_num=',
+    buffDota: 'https://buff.163.com/api/market/goods?game=dota2&page_size=80&sort_by=price.desc&min_price=0.1&max_price=300&page_num=',
     igxeCsgo: 'https://www.igxe.cn/csgo/730?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.3&price_to=2000&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1569832685927&page_no=',
     igxeDotaBeta: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.05&price_to=300&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no=',
     igxeDotaPro: 'https://www.igxe.cn/dota2/570?is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=14.8&price_to=500&sort=1&ctg_id=0&type_id=0&page_size=400&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&_t=1570519278056&page_no=',
@@ -147,6 +196,14 @@ module.exports = appInfo => {
       ctx.status = 500;
     },
   };
+
+  // config.httpclient = {
+  //   request: {
+  //     enableProxy: true,
+  //     rejectUnauthorized: false,
+  //     proxy: 'http://222.73.144.63:80',
+  //   },
+  // };
 
   return {
     ...config,
