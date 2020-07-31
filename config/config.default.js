@@ -32,21 +32,13 @@ module.exports = appInfo => {
   // 请求频率
   config.frequency = 5000;
   config.igxeFrequency = 1000;
-  config.igxeCheapFrequency = 3000;
+  config.igxeCheapFrequency = 2000;
+
+  // igxe折扣价所用session
+  const igxeCheapSession = 'phmq8omcx95vupm3ns8fpjt7j64dl1kr'
 
   // 代理IP，要至少有10个
   config.proxy = [
-    'http://58.220.95.79:10000',
-    'http://58.220.95.80:9401',
-    'http://58.220.95.78:9401',
-    'http://58.220.95.78:9401',
-    'http://221.122.91.75:10286',
-    'http://58.220.95.54:9400',
-    'http://150.138.253.71:808',
-    'http://183.220.145.3:80',
-    'http://58.220.95.30:10174',
-    'http://58.220.95.80:9401'
-
   ]
   // session列表，要有10个以上
   config.sessionList = [
@@ -55,9 +47,7 @@ module.exports = appInfo => {
   config.multipart = {
     mode: 'file'
   }
-
-  // let session1 = '1-C2PStwwxNy8QlFPzTsLGyYVWJFmFAmZMweifNd7iDLow2043274142'
-  // let session2 = '1-jeKPIBxiaZsftzoh5TL2b8T6wxlTOIcjtbhtaQe-rtBg2045759776'
+  
   config.header =
   {
     cookie: '',
@@ -76,7 +66,7 @@ module.exports = appInfo => {
 
   config.igxeCheapHeader =
   {
-    cookie: 'sessionid=wav09gfmk706pakhfmnvumiw508hc2rn;',
+    cookie: 'sessionid=' + igxeCheapSession + ';',
     Connection: 'keep-alive',
     Accept: 'application/json, text/javascript, */*; q=0.01',
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',

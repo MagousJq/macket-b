@@ -28,13 +28,8 @@ class GoodsService extends Service {
           let arr = []; 
           let headers = this.config.igxeHeader
           headers['User-Agent'] = fakeUa()
-          let headers = this.config.igxeHeader
-          const Data = await this.ctx.curl(list[j].url + i,{
-            headers
-          });
-          const Data = await request.get(item.url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
-          let html = Buffer.from(Data.text).toString();
-          let $ = cheerio.load(html);
+          const Data = await request.get(list[j].url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+          let $ = cheerio.load(Data.text);
           let dataList=$('.dataList');
           dataList.children().each(function(index) {
             let str = $(this).text().replace(/\n/g, '').trim();

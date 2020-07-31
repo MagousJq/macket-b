@@ -23,9 +23,8 @@ class GoodsService extends Service {
           let headers = this.config.igxeHeader
           headers['User-Agent'] = fakeUa()
           const Data = await request.get(item.url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
-          let html = Buffer.from(Data.text).toString();
           let kinds = ['崭新出厂','略有磨损','久经沙场','战痕累累','破损不堪','无涂装','高级','普通级'];
-          let $ = cheerio.load(html);
+          let $ = cheerio.load(Data.text);
           let dataList=$('.dataList');
           dataList.children().each(function(index) {
             let str = $(this).text().replace(/\n/g, '')
