@@ -10,7 +10,7 @@ class GoodsService extends Service {
       let headers = this.config.header
       headers['User-Agent'] = fakeUa()
       headers['cookie'] = 'session=' + this.config.sessionList[0] + ';'
-      const Data = await request.get(this.config.urlList.buffDota + 274).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 6000 });
+      const Data = await request.get(this.config.urlList.buffDota + 254).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 6000 });
       if (Data.status === 200 && Data.text && JSON.parse(Data.text).code === 'OK') {
         return JSON.parse(Data.text).data.total_page;
       }

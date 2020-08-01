@@ -77,7 +77,7 @@ class GoodsService extends Service {
     const url = 'https://www.igxe.cn/svip/igb_sale_product?app_id=730&product_category_id=&product_type_id=&tags_exterior_id=&tags_rarity_id=&tags_quality_id=&sort_key=1&sort_rule=2&market_name=&page_no='
     let headers = this.config.igxeCheapHeader
     headers['User-Agent'] = fakeUa()
-    const res = await request.get(url + 1).proxy(this.config.proxy[0]).set(headers);
+    const res = await request.get(url + 1).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
     if(res.status !== 200 || !res.text || !JSON.parse(res.text).rows){
       console.log('igxe的session过期')
       return 
@@ -89,7 +89,7 @@ class GoodsService extends Service {
       try {
         let headers = this.config.igxeCheapHeader
         headers['User-Agent'] = fakeUa()
-        const res = await request.get(url + i).proxy(this.config.proxy[0]).set(headers);
+        const res = await request.get(url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
         Arr = Arr.concat(JSON.parse(res.text).rows.map(item => {
           return {
             goodsName: item.market_name,
@@ -97,8 +97,8 @@ class GoodsService extends Service {
           }
         }));
       } catch (err) {
-        // console.log(err)
         console.log('导入失败:第' + i + '页')
+        console.log(err)
         Error.push(i);
       }
     }

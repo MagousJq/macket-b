@@ -47,7 +47,7 @@ class GoodsService extends Service {
       await (this.sleep(this.config.frequency));
     }
     const errorPieces =  Math.ceil(errors.length / slen)
-    const errorNum = []
+    let errorNum = []
     for(let i = 1; i <= errorPieces; i++){
       let Obj = await this.getBuffOnePage(errors.slice((i-1)*slen, i*slen), false)
       errorNum = errorNum.concat(Obj.errors)
