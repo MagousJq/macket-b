@@ -4,7 +4,6 @@ const Service = require('egg').Service;
 const cheerio = require('cheerio');
 const request = require('superagent');
 require('superagent-proxy')(request);
-const sharp = require('sharp');
 const fakeUa = require('fake-useragent');
 
 class GoodsService extends Service {
@@ -254,9 +253,9 @@ class GoodsService extends Service {
   }
 
   async test(file){
-    await sharp(file.filepath).resize(120, null).toFile('output.png').then(data => {
-      return data
-    });
+    // await sharp(file.filepath).resize(120, null).toFile('output.png').then(data => {
+    //   return data
+    // });
     // fs.createReadStream(file.filepath)
     // .pipe(roundedCornerResizer)
   }

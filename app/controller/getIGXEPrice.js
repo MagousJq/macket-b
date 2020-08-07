@@ -1,7 +1,6 @@
 'use strict';
 
 const Controller = require('./base_controller');
-const sharp = require('sharp');
 const fakeUa = require('fake-useragent');
 const request = require('superagent');
 require('superagent-proxy')(request);
@@ -77,18 +76,18 @@ class GoodsController extends Controller {
     this.success(res);
   }
   async test() {
-    const { ctx } = this;
-    let file = ctx.request.files[0];
-    let name = file.filename
-    let buff = await sharp(file.filepath)
-    .metadata()
-    .then(({ width }) => sharp(file.filepath)
-      .resize(Math.round(width * 0.5))
-      .toBuffer().then(data => {
-      return data;
-    }))
-    this.status = 200;
-    this.success({data: buff, name})
+    // const { ctx } = this;
+    // let file = ctx.request.files[0];
+    // let name = file.filename
+    // let buff = await sharp(file.filepath)
+    // .metadata()
+    // .then(({ width }) => sharp(file.filepath)
+    //   .resize(Math.round(width * 0.5))
+    //   .toBuffer().then(data => {
+    //   return data;
+    // }))
+    // this.status = 200;
+    // this.success({data: buff, name})
   }
   async proxy(){
     let error = 0
