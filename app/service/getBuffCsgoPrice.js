@@ -74,10 +74,7 @@ class GoodsService extends Service {
     let Arr = []
     let errors = []
     for(let i = 0;i < page.length; i++){
-      let index = i
-      if(i >= this.config.proxy.length - 1){
-        index = this.config.proxy.length - 1
-      }
+      let index = i % this.config.proxy.length
       if(flag){
         index = 0
       }

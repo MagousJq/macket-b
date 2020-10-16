@@ -76,7 +76,8 @@ class GoodsService extends Service {
     const url = 'https://www.igxe.cn/svip/igb_sale_product?app_id=730&product_category_id=&product_type_id=&tags_exterior_id=&tags_rarity_id=&tags_quality_id=&sort_key=1&sort_rule=2&market_name=&page_no='
     let headers = this.config.igxeCheapHeader
     headers['User-Agent'] = fakeUa()
-    const res = await request.get(url + 1).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+    // const res = await request.get(url + 1).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+    const res = await request.get(url + 1).set(headers).timeout({ deadline: 5000 });
     if(res.status !== 200 || !res.text || !JSON.parse(res.text).rows){
       console.log('igxe的session过期')
       return 
@@ -97,8 +98,27 @@ class GoodsService extends Service {
         }));
       } catch (err) {
         console.log('导入失败:第' + i + '页')
-        console.log(err)
         Error.push(i);
+      }
+    }
+    let errors = []
+    for (let i = 0; i < Error.length; i++) {
+      console.log('再次导入IGXE-CSGO-页码:' + Error[i]);
+      await (this.sleep(this.config.igxeCheapFrequency));
+      try {
+        let headers = this.config.igxeCheapHeader
+        headers['User-Agent'] = fakeUa()
+        const res = await request.get(url + Error[i]).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+        Arr = Arr.concat(JSON.parse(res.text).rows.map(item => {
+          return {
+            goodsName: item.market_name,
+            igxeCheapPrice: (parseFloat(item.unit_price) - parseFloat(item.svip_voucher_money)).toFixed(2),
+          }
+        }));
+      } catch (err) {
+        console.log('再次导入失败:第' + Error[i] + '页')
+        console.log(err)
+        errors.push(Error[i])
       }
     }
     // console.log(Arr)
@@ -118,7 +138,7 @@ class GoodsService extends Service {
     }
     let time = new Date()
     console.log('导入数据：' + Arr.length + '条');
-    console.log('失败次数:' + Error.length);
+    console.log('失败次数:' + errors.length);
     console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
     console.log(time.getHours() + ':' + time.getMinutes());
   }

@@ -25,7 +25,7 @@ class GoodsService extends Service {
   }
   async store(total) {
     let Arr = [];
-    let errors = 0;
+    let errors = [];
     let pages = [];
     const now = new Date();
     for(let i=1; i<=total; i++){
@@ -41,7 +41,15 @@ class GoodsService extends Service {
     const pieces = Math.ceil(pages.length / slen)
     for(let i = 1; i <= pieces; i++){
       let Obj = await this.getBuffOnePage(pages.slice((i-1)*slen, i*slen))
-      errors += Obj.errors
+      errors = errors.concat(Obj.errors)
+      Arr = Arr.concat(Obj.data)
+      await (this.sleep(this.config.frequency));
+    }
+    const errorPieces =  Math.ceil(errors.length / slen)
+    let errorNum = []
+    for(let i = 1; i <= errorPieces; i++){
+      let Obj = await this.getBuffOnePage(errors.slice((i-1)*slen, i*slen), false)
+      errorNum = errorNum.concat(Obj.errors)
       Arr = Arr.concat(Obj.data)
       await (this.sleep(this.config.frequency));
     }
@@ -59,16 +67,13 @@ class GoodsService extends Service {
       this.ctx.model.Dota.create(item);
     });
     console.log('导入数据：' + Arr.length + '条');
-    console.log('失败总页数：' + errors + '页');
+    console.log('失败总页数：' + errorNum.length + '页');
   }
   async getBuffOnePage(page){
     let Arr = []
-    let errors = 0
+    let errors = []
     for(let i = 0;i < page.length; i++){
-      let index = i
-      if(i >= this.config.proxy.length - 1){
-        index = this.config.proxy.length - 1
-      }
+      let index = i % this.config.proxy.length
       try {
         console.log('导入buff-dota，页码为:', page[i])
         let headers = this.config.header
@@ -78,11 +83,11 @@ class GoodsService extends Service {
         if (Data.status === 200 && Data.text && JSON.parse(Data.text).code === 'OK') {
           Arr = Arr.concat(JSON.parse(Data.text).data.items);
         } else { 
-          errors++
+          errors.push(page[i])
           console.log('失败:第' + page[i] + '页', 'session为: ' + this.config.sessionList[i], '代理IP为:' + this.config.proxy[index]);
         }
       } catch (err) {
-        errors++
+        errors.push(page[i])
         console.log('失败:第' + page[i] + '页', 'session为: ' + this.config.sessionList[i], '代理IP为:' + this.config.proxy[index]);;
         console.log('错误原因:', err);
       }

@@ -9,8 +9,8 @@ class GoodsController extends Controller {
   }
   async csgoStore() {
     const { ctx } = this;
-    if(this.config.sessionList.length <= 10 || this.config.proxy.length < 10){
-      this.error('你必须要搞10个以上session和代理IP');
+    if(this.config.sessionList.length <= 10){
+      this.error('你必须要搞10个以上session');
       return 
     }
     const total = await ctx.service.getBuffCsgoPrice.getTotalPage();
@@ -60,8 +60,8 @@ class GoodsController extends Controller {
   // }
   async dotaStore() {
     const { ctx } = this;
-    if(this.config.sessionList.length <= 10 || this.config.proxy.length < 10){
-      this.error('你必须要搞10个以上session和代理IP');
+    if(this.config.sessionList.length <= 10){
+      this.error('你必须要搞10个以上session');
       return 
     }
     const total = await ctx.service.getBuffDotaPrice.getTotalPage();

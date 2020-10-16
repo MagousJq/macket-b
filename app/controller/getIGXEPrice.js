@@ -132,7 +132,7 @@ class GoodsController extends Controller {
       } catch (err) {
         error++
         console.log('可能这个session过期:' + this.config.sessionList[i] + ',或者这个代理IP有问题:' + this.config.proxy[index] + ',当然也可能都没问题的,报错原因是：')
-        console.log(err)
+        // console.log(err)
       }
     }
     console.log('全部校验结束')

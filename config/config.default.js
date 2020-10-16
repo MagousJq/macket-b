@@ -31,25 +31,21 @@ module.exports = appInfo => {
 
   // 请求频率
   config.frequency = 5000;
-  config.igxeFrequency = 1000;
-  config.igxeCheapFrequency = 2000;
+  config.igxeFrequency = 3000;
+  config.igxeCheapFrequency = 3000;
 
   // igxe折扣价所用session
-  const igxeCheapSession = 'y7v0nr46wi3i5zin5jh9n1b8n9vz0gx7'
+  const igxeCheapSession = 'cbnk1gth607kq6d6ywqhzx77hpf7cyvw'
 
-  // 代理IP，要至少有10个
+  // 代理IP
   config.proxy = [
-    'http://58.220.95.79:10000',
-    'http://58.220.95.80:9401',
-    'http://58.220.95.54:9400',
-    'http://150.138.253.71:808',
-    'http://183.220.145.3:80',
-    'http://58.220.95.80:9401',
-    'http://58.220.95.90:9401',
-    'http://183.220.145.3:80',
-    'http://58.220.95.80:9401',
-    'http://58.220.95.86:9401',
-    'http://58.220.95.79:10000'
+    // 'http://221.122.91.34:80',
+    // 'http://218.60.8.99:3129',
+    // 'http://221.182.31.54:8080',
+    // 'http://58.220.95.79:10000',
+    // 'http://118.24.172.37:1080',
+    // 'http://221.122.91.59:80',
+    // 'http://58.220.95.80:9401'
   ]
   // session列表，要有10个以上
   config.sessionList = [
