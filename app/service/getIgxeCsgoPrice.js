@@ -226,6 +226,9 @@ class GoodsService extends Service {
         price = parseFloat(item.igxeMinPrice)
       }
       item.igxeMinPrice = price
+      if(query.isTrueData){
+        item.buffBuyPrice = item.buffBuyPrice > item.buffMinPrice ? item.buffMinPrice : item.buffBuyPrice
+      }
       return parseFloat(item.buffMinPrice) - parseFloat(price) > 0
       // && item.goodsName.indexOf('印花') === -1
     });
