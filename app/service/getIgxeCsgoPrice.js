@@ -22,24 +22,39 @@ class GoodsService extends Service {
           let headers = this.config.igxeHeader
           headers['User-Agent'] = fakeUa()
           const Data = await request.get(item.url + i).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
-          let kinds = ['崭新出厂','略有磨损','久经沙场','战痕累累','破损不堪','无涂装','高级','普通级'];
           let $ = cheerio.load(Data.text);
           let dataList=$('.dataList');
-          dataList.children().each(function(index) {
-            let str = $(this).text().replace(/\n/g, '')
-              .trim();
-            if (kinds.some(item => str.indexOf(item) !== -1)) {
-              const len = str.length;
-              str = str.slice(5, len);
+          dataList.children().each(function(dataI) {
+            let name = '';
+            let price = '';
+            let count = 0;
+            let flag = 3
+            if($(this).children().length === 6) {
+              flag = 4
             }
-            let name = str.split(' ￥ ')[0].trim();
-            const price = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[0].replace(/\s/g, '').trim());
-            const count = parseFloat(str.split(' ￥ ')[1].split(' 在售：')[1].replace(/\s/g, '').trim());
-            arr[index] = {
+            $(this).children().each(function(index) {
+              if(index === flag) {
+                name = $(this).attr('title');
+              }
+              if(index === flag + 1) {
+                $(this).children().first().children().each(function(ii) {
+                  if(ii !== 0) {
+                    price += $(this).text()
+                  }
+                })
+                let txt = $(this).children().last().text()
+                if(txt.indexOf('在售') > -1) {
+                  count = txt.split('在售：')[1].trim()
+                }else {
+                  price = 0
+                }
+              }
+            })
+            arr[dataI] = {
               // igxeId: '',
               goodsName: name,
-              igxeMinPrice: price,
-              igxeSellNum: count,
+              igxeMinPrice: parseFloat(price),
+              igxeSellNum: parseInt(count),
             };
           });
           Arr = Arr.concat(arr);
@@ -66,7 +81,6 @@ class GoodsService extends Service {
     let time = new Date()
     console.log('导入数据：' + Arr.length + '条');
     console.log('失败次数:' + len);
-    console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
     console.log(time.getHours() + ':' + time.getMinutes());
   }
   async getCheapData() {
@@ -77,7 +91,7 @@ class GoodsService extends Service {
     let headers = this.config.igxeCheapHeader
     headers['User-Agent'] = fakeUa()
     // const res = await request.get(url + 1).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
-    const res = await request.get(url + 1).set(headers).timeout({ deadline: 5000 });
+    const res = await request.get(url + 1).set(headers).proxy(this.config.proxy[0]).timeout({ deadline: 5000 });
     if(res.status !== 200 || !res.text || !JSON.parse(res.text).rows){
       console.log('igxe的session过期')
       return 
@@ -102,23 +116,26 @@ class GoodsService extends Service {
       }
     }
     let errors = []
-    for (let i = 0; i < Error.length; i++) {
-      console.log('再次导入IGXE-CSGO-页码:' + Error[i]);
-      await (this.sleep(this.config.igxeCheapFrequency));
-      try {
-        let headers = this.config.igxeCheapHeader
-        headers['User-Agent'] = fakeUa()
-        const res = await request.get(url + Error[i]).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
-        Arr = Arr.concat(JSON.parse(res.text).rows.map(item => {
-          return {
-            goodsName: item.market_name,
-            igxeCheapPrice: (parseFloat(item.unit_price) - parseFloat(item.svip_voucher_money)).toFixed(2),
-          }
-        }));
-      } catch (err) {
-        console.log('再次导入失败:第' + Error[i] + '页')
-        console.log(err)
-        errors.push(Error[i])
+    for(let k = 0;k < 2;k++){
+      errors = []
+      for (let i = 0; i < Error.length; i++) {
+        console.log('再次导入IGXE-CSGO-页码:' + Error[i]);
+        await (this.sleep(this.config.igxeCheapFrequency));
+        try {
+          let headers = this.config.igxeCheapHeader
+          headers['User-Agent'] = fakeUa()
+          const res = await request.get(url + Error[i]).proxy(this.config.proxy[0]).set(headers).timeout({ deadline: 5000 });
+          Arr = Arr.concat(JSON.parse(res.text).rows.map(item => {
+            return {
+              goodsName: item.market_name,
+              igxeCheapPrice: (parseFloat(item.unit_price) - parseFloat(item.svip_voucher_money)).toFixed(2),
+            }
+          }));
+        } catch (err) {
+          console.log('再次导入失败:第' + Error[i] + '页')
+          console.log(err)
+          errors.push(Error[i])
+        }
       }
     }
     // console.log(Arr)
@@ -132,14 +149,13 @@ class GoodsService extends Service {
         {
           upsert: false,
         }, err => {
-          // console.log(err)
+          // console.log('写入mongo失败:', item.goodsName, item.igxeCheapPrice)
         });
       });
     }
     let time = new Date()
-    console.log('导入数据：' + Arr.length + '条');
+    console.log('导入数据:' + Arr.length + '条');
     console.log('失败次数:' + errors.length);
-    console.log('需等待3-10分钟，依据你电脑性能处理速度不一样');
     console.log(time.getHours() + ':' + time.getMinutes());
   }
   async canBuy(query) {
@@ -229,7 +245,7 @@ class GoodsService extends Service {
       if(query.isTrueData){
         item.buffBuyPrice = item.buffBuyPrice > item.buffMinPrice ? item.buffMinPrice : item.buffBuyPrice
       }
-      return parseFloat(item.buffMinPrice) - parseFloat(price) > 0
+      return parseFloat(item.buffMinPrice) - parseFloat(price) > -50
       // && item.goodsName.indexOf('印花') === -1
     });
     list.sort((a, b) => {

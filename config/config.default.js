@@ -2,16 +2,16 @@
 
 'use strict';
 
-const igxeKnife = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8C%95%E9%A6%96&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=5&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
-const igxeAutoGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%AD%A5%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=4&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
-const igxeHandGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%89%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=1&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
-const igxeMicroGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%BE%AE%E5%9E%8B%E5%86%B2%E9%94%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=3&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
-const igxeShotGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E9%87%8D%E5%9E%8B%E6%AD%A6%E5%99%A8&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=2&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
-const igxePic = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8D%B0%E8%8A%B1&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&sort=1&ctg_id=8&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
-const igxeGloves = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=13&is_buying=0&ctg_name=%E6%89%8B%E5%A5%97&page_no=';
-const igxeMusicBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=9&is_buying=0&ctg_name=%E9%9F%B3%E4%B9%90%E7%9B%92&page_no=';
-const igxeGraffiti = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=11&is_buying=0&ctg_name=%E6%B6%82%E9%B8%A6&page_no=';
-const igxeBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&sort=1&ctg_id=6&is_buying=0&ctg_name=%E7%AE%B1%E5%AD%90&page_no='
+const igxeKnife = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8C%95%E9%A6%96&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.1&sort=1&ctg_id=5&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
+const igxeAutoGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%AD%A5%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.1&sort=1&ctg_id=4&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
+const igxeHandGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E6%89%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.1&sort=1&ctg_id=1&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
+const igxeMicroGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%BE%AE%E5%9E%8B%E5%86%B2%E9%94%8B%E6%9E%AA&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.1&sort=1&ctg_id=3&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
+const igxeShotGun = 'https://www.igxe.cn/csgo/730?ctg_name=%E9%87%8D%E5%9E%8B%E6%AD%A6%E5%99%A8&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.1&sort=1&ctg_id=2&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
+const igxePic = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8D%B0%E8%8A%B1&is_buying=0&is_stattrak%5B%5D=0&is_stattrak%5B%5D=0&price_from=0.1&sort=1&ctg_id=8&type_id=0&page_size=200&rarity_id=0&exterior_id=0&quality_id=0&capsule_id=0&page_no=';
+const igxeGloves = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=13&is_buying=0&ctg_name=%E6%89%8B%E5%A5%97&page_no=';
+const igxeMusicBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=9&is_buying=0&ctg_name=%E9%9F%B3%E4%B9%90%E7%9B%92&page_no=';
+const igxeGraffiti = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=11&is_buying=0&ctg_name=%E6%B6%82%E9%B8%A6&page_no=';
+const igxeBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=6&is_buying=0&ctg_name=%E7%AE%B1%E5%AD%90&page_no='
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -30,7 +30,7 @@ module.exports = appInfo => {
   config.middleware = [];
 
   // 请求频率
-  config.frequency = 5000;
+  config.frequency = 10000;
   config.igxeFrequency = 3000;
   config.igxeCheapFrequency = 3000;
 
@@ -103,11 +103,11 @@ module.exports = appInfo => {
       name: '匕首',
     }, {
       url: igxeAutoGun,
-      pages: 11,
+      pages: 12,
       name: '步枪',
     }, {
       url: igxeHandGun,
-      pages: 10,
+      pages: 11,
       name: '手枪',
     }, {
       url: igxeMicroGun,
@@ -115,7 +115,7 @@ module.exports = appInfo => {
       name: '微冲',
     }, {
       url: igxeShotGun,
-      pages: 5,
+      pages: 6,
       name: '霰弹枪',
     }, {
       url: igxePic,
@@ -131,11 +131,11 @@ module.exports = appInfo => {
       name: '音乐盒',
     },{
       url: igxeGraffiti,
-      pages: 8,
+      pages: 5,
       name: '涂鸦'
     },{
       url: igxeBox,
-      pages: 1,
+      pages: 2,
       name: '箱子'
     }]
   };

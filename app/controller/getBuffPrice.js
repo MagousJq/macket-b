@@ -9,7 +9,7 @@ class GoodsController extends Controller {
   }
   async csgoStore() {
     const { ctx } = this;
-    if(this.config.sessionList.length <= 10){
+    if(this.config.sessionList.length < 10){
       this.error('你必须要搞10个以上session');
       return 
     }
@@ -60,7 +60,7 @@ class GoodsController extends Controller {
   // }
   async dotaStore() {
     const { ctx } = this;
-    if(this.config.sessionList.length <= 10){
+    if(this.config.sessionList.length < 10){
       this.error('你必须要搞10个以上session');
       return 
     }
