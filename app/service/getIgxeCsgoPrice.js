@@ -144,7 +144,7 @@ class GoodsService extends Service {
     if (Arr.length > 0) {
       try {
         await this.ctx.model.Csgoex.updateMany(
-          !flag ? { $gt: 0.1 } : { igxeCheapPrice: { $gt: 40 } },
+          !flag ? { igxeCheapPrice: { $gt: 0.1 } } : { igxeCheapPrice: { $gt: 40 } },
           { $set: { igxeCheapPrice: 0 } }
         );
       } catch (error) {
