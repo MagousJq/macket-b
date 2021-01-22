@@ -1,7 +1,6 @@
 'use strict';
 
 const Controller = require('./base_controller');
-const moment = require('moment');
 
 class GoodsController extends Controller {
   async login() {
@@ -9,9 +8,9 @@ class GoodsController extends Controller {
   }
   async csgoStore() {
     const { ctx } = this;
-    if(this.config.sessionList.length < 10){
+    if (this.config.sessionList.length < 10) {
       this.error('你必须要搞10个以上session');
-      return 
+      return;
     }
     const total = await ctx.service.getBuffCsgoPrice.getTotalPage();
     if (total) {
@@ -60,9 +59,9 @@ class GoodsController extends Controller {
   // }
   async dotaStore() {
     const { ctx } = this;
-    if(this.config.sessionList.length < 10){
+    if (this.config.sessionList.length < 10) {
       this.error('你必须要搞10个以上session');
-      return 
+      return;
     }
     const total = await ctx.service.getBuffDotaPrice.getTotalPage();
     if (total) {

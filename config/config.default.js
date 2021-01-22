@@ -11,7 +11,8 @@ const igxePic = 'https://www.igxe.cn/csgo/730?ctg_name=%E5%8D%B0%E8%8A%B1&is_buy
 const igxeGloves = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=13&is_buying=0&ctg_name=%E6%89%8B%E5%A5%97&page_no=';
 const igxeMusicBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=9&is_buying=0&ctg_name=%E9%9F%B3%E4%B9%90%E7%9B%92&page_no=';
 const igxeGraffiti = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=11&is_buying=0&ctg_name=%E6%B6%82%E9%B8%A6&page_no=';
-const igxeBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=6&is_buying=0&ctg_name=%E7%AE%B1%E5%AD%90&page_no='
+const igxeBox = 'https://www.igxe.cn/csgo/730?%20&capsule_id=0&rarity_id=0&quality_id=0&page_size=200&exterior_id=0&price_from=0.1&sort=1&ctg_id=6&is_buying=0&ctg_name=%E7%AE%B1%E5%AD%90&page_no=';
+const igxePeople = 'https://www.igxe.cn/csgo/730?%20&keyword=%E7%8B%82%E7%89%99%E5%A4%A7%E8%A1%8C%E5%8A%A8&ctg_id=15&ctg_name=%E6%8E%A2%E5%91%98&page_no=';
 
 /**
  * @param {Egg.EggAppInfo} appInfo app info
@@ -31,30 +32,29 @@ module.exports = appInfo => {
 
   // 请求频率
   config.frequency = 10000;
-  config.igxeFrequency = 3000;
-  config.igxeCheapFrequency = 3000;
+  config.igxeFrequency = 1000;
+  config.c5Frequency = 3000;
+  config.igxeCheapFrequency = 1200;
 
   // igxe折扣价所用session
-  const igxeCheapSession = 'cbnk1gth607kq6d6ywqhzx77hpf7cyvw'
+  const igxeCheapSession = 'yrmxvhoux5mjxs91ebmidv4i602pf49v';
 
   // 代理IP
   config.proxy = [
-    // 'http://221.122.91.34:80',
-    // 'http://218.60.8.99:3129',
-    // 'http://221.182.31.54:8080',
     // 'http://58.220.95.79:10000',
-    // 'http://118.24.172.37:1080',
-    // 'http://221.122.91.59:80',
-    // 'http://58.220.95.80:9401'
-  ]
+    // 'http://183.220.145.3',
+    // 'http://177.11.114.10:3128',
+    // 'http://103.209.131.3:8080',
+    'http://58.220.95.80:9401',
+  ];
   // session列表，要有10个以上
   config.sessionList = [
-  ]
+  ];
 
   config.multipart = {
-    mode: 'file'
-  }
-  
+    mode: 'file',
+  };
+
   config.header =
   {
     cookie: '',
@@ -129,15 +129,48 @@ module.exports = appInfo => {
       url: igxeMusicBox,
       pages: 1,
       name: '音乐盒',
-    },{
+    }, {
       url: igxeGraffiti,
-      pages: 5,
-      name: '涂鸦'
-    },{
+      pages: 6,
+      name: '涂鸦',
+    }, {
       url: igxeBox,
       pages: 2,
-      name: '箱子'
-    }]
+      name: '箱子',
+    }, {
+      url: igxePeople,
+      pages: 1,
+      name: '探员',
+    }],
+    c5CsKinds: [{
+      url: 'https://www.c5game.com/csgo/default/result.html?type=csgo_type_knife&sort=price&page=',
+      pages: 61,
+      name: '匕首',
+    }, {
+      url: 'https://www.c5game.com/csgo/default/result.html?type=type_hands&sort=price&page=',
+      pages: 10,
+      name: '手套',
+    }, {
+      url: 'https://www.c5game.com/csgo/default/result.html?type=csgo_type_rifle&sort=price&page=',
+      pages: 83,
+      name: '步枪',
+    }, {
+      url: 'https://www.c5game.com/csgo/default/result.html?min=1&max=&k=&csgo_filter_category=&rarity=&quality=&exterior=&sort=price&type=csgo_type_pistol&tag=&page=',
+      pages: 66,
+      name: '手枪',
+    }, {
+      url: 'https://www.c5game.com/csgo/default/result.html?min=1&max=&k=&csgo_filter_category=&rarity=&quality=&exterior=&sort=&type=csgo_type_smg&tag=&page=',
+      pages: 43,
+      name: '冲锋枪',
+    }, {
+      url: 'https://www.c5game.com/csgo/default/result.html?min=1&max=&k=&csgo_filter_category=&rarity=&quality=&exterior=&sort=&type=csgo_type_other&tag=&page=',
+      pages: 25,
+      name: '其他',
+    }, {
+      url: 'https://www.c5game.com/csgo/default/result.html?min=1&max=&k=&csgo_filter_category=&rarity=&quality=&exterior=&sort=price&type=csgo_type_machinegun&tag=&page=',
+      pages: 7,
+      name: '重武器',
+    }],
   };
 
   // add your user config here

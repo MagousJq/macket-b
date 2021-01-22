@@ -1,158 +1,159 @@
 'use strict';
 
 const Service = require('egg').Service;
+const cheerio = require('cheerio');
+const request = require('superagent');
+require('superagent-proxy')(request);
+const fakeUa = require('fake-useragent');
 
 class GoodsService extends Service {
-  async getTotalPage() {
-    const url = 'https://buff.163.com/api/market/goods?game=csgo&page_num=';
-    try {
-      const Data = await this.ctx.curl(url + 22, {
-        dataType: 'json',
-        headers: Header,
-      });
-      if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
-        return Data.data.data.total_page;
-      }
-      return 0;
-    } catch (err) {
-      return 0;
-    }
-  }
-  async store(total) {
-    const url = 'https://buff.163.com/api/market/goods?game=csgo&sort_by=price.desc&page_num=';
-    const now = new Date();
-    let Arr = [];
+  async getTotalData() {
     const Error = [];
-    let error = 0;
-    console.log('starting...');
-    for (let i = 1; i < total - 20; i++) {
-      console.log('页数:' + i);
-      await (this.sleep(this.config.frequency));
-      try {
-        const Data = await this.ctx.curl(url + i, {
-          dataType: 'json',
-          headers: Header,
-        });
-        if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
-          Arr = Arr.concat(Data.data.data.items);
-        } else {
-          error++;
+    let Arr = [];
+    const C5CsKindsLen = this.config.urlList.c5CsKinds.length;
+    for (let j = 0; j < C5CsKindsLen; j++) {
+      if (j > 0) { await (this.sleep(30000)); }
+      const item = this.config.urlList.c5CsKinds[j];
+      const pages = [];
+      for (let i = 1; i <= item.pages; i++) {
+        pages.push(i);
+      }
+      pages.sort(function() {
+        return Math.random() - 0.5;
+      });
+      pages.sort(function() {
+        return Math.random() - 0.5;
+      });
+      for (let i = 0; i < item.pages; i++) {
+        console.log('C5-CSGO-' + item.name + '-页码:' + pages[i]);
+        await (this.sleep(this.config.c5Frequency));
+        try {
+          const arr = [];
+          const headers = this.config.igxeHeader;
+          headers['User-Agent'] = fakeUa();
+          const Data = await request.get(item.url + pages[i]).proxy(this.config.proxy[0]).set(headers)
+            .timeout({ deadline: 5000 });
+          const $ = cheerio.load(Data.text);
+          const dataList = $('.list-item4');
+          dataList.children().each(function(i) {
+            let name = '';
+            let price = '';
+            let c5link = '';
+            $(this).children().each(function(ii) {
+              if (ii === 0) {
+                c5link = 'https://www.c5game.com/' + $(this).attr('href');
+                $(this).children().each(function(iii) {
+                  if (iii === 1) {
+                    name = $(this).attr('alt');
+                  }
+                });
+              } else if (ii === 2) {
+                $(this).children().each(() => {
+                  price = ($(this).text() + '').split('Price￥')[1].split('from')[0].trim();
+                });
+              }
+            });
+            arr[i] = {
+              goodsName: name,
+              c5MinPrice: parseFloat(price),
+              c5link,
+            };
+          });
+          Arr = Arr.concat(arr);
+        } catch (err) {
+          console.log('导入失败:第' + i + '页');
+          Error.push(i);
         }
-      } catch (err) {
-        Error.push(i);
       }
     }
     const len = Error.length;
-    if (len) {
-      await (this.sleep(1000));
+    if (Arr.length > 0) {
+      Arr.forEach(item => {
+        this.ctx.model.Csgoex.updateOne({
+          goodsName: item.goodsName,
+        },
+        item,
+        {
+          upsert: false,
+        }, () => {});
+      });
     }
-    for (let i = 0; i < len; i++) {
-      await (this.sleep(this.config.frequency));
-      try {
-        const Data = await this.ctx.curl(url + Error[i], {
-          dataType: 'json',
-          headers: Header,
-        });
-        if (Data.status === 200 && Data.data && Data.data.code === 'OK') {
-          Arr = Arr.concat(Data.data.data.items);
-        } else {
-          error++;
-        }
-      } catch (err) {
-        error++;
-        console.log('失败页数：' + Error[i]);
+    const time = new Date();
+    console.log(time.getHours() + ':' + time.getMinutes(), '导入C5数据：' + Arr.length + '条');
+    console.log('失败次数:' + len);
+  }
+  async canBuy(query) {
+    let list = await this.ctx.model.Csgoex.aggregate([
+      {
+        $match: {
+          steamMinPrice: { $lte: 10000, $gte: 0 },
+          c5MinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
+          goodsName: { $regex: query.name },
+        },
+      },
+    ]);
+    list = list.filter(item =>
+      item.steamMinPrice / item.c5MinPrice > 2
+    );
+    list.sort((a, b) => {
+      return b.steamMinPrice / b.c5MinPrice - a.steamMinPrice / a.c5MinPrice;
+    });
+    list = list.slice(0, 300);
+    list = list.map(e => {
+      return {
+        id: e._id,
+        buffId: e.buffId,
+        igxeId: e.igxeId,
+        c5link: e.c5link,
+        goodsName: e.goodsName,
+        steamMarketUrl: e.steamMarketUrl,
+        igxeMinPrice: e.igxeMinPrice,
+        c5MinPrice: e.c5MinPrice,
+        buffMinPrice: e.buffMinPrice,
+        steamMinPrice: e.steamMinPrice,
+        time: e.date,
+      };
+    });
+    return list;
+  }
+  async canUse(query) {
+    let list = await this.ctx.model.Csgoex.aggregate([
+      {
+        $match: {
+          steamMinPrice: { $gt: 0 },
+          buffMinPrice: { $lte: 20000, $gt: 0.1 },
+          c5MinPrice: { $lte: parseFloat(query.maxPrice), $gte: parseFloat(query.minPrice) },
+          goodsName: { $regex: query.name },
+        },
+      },
+    ]);
+    list = list.filter(item => {
+      if (query.isTrueData) {
+        item.buffBuyPrice = item.buffBuyPrice > item.buffMinPrice ? item.buffMinPrice : item.buffBuyPrice;
       }
-    }
-    const theDate = await this.ctx.model.Time.create({
-      date: now,
-      num: Arr.length,
-      type: 'CSGO',
+      return parseFloat(item.buffMinPrice) - parseFloat(item.c5MinPrice) >= 0;
     });
-    this.format(Arr, theDate._id).forEach(item => {
-      this.ctx.model.Csgoex.create(item);
-    });
-    console.log('导入数据：' + Arr.length + '条');
-    console.log('失败次数:' + error);
-  }
-  async canBuy() {
-    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgoex.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
-    list = list.filter(item =>
-      item.steamMinPrice < 200
-      && item.steamMinPrice > 0
-      && item.steamMinPrice / item.buffMinPrice > 2
-      && item.steamMinPrice / item.buffMinPrice < 6
-      && item.buffMinPrice > 0.4
-      && item.buffMinPrice < 40
-      && item.goodsName.indexOf('印花') === -1
-      && item.goodsName.indexOf('涂鸦') === -1
-    );
     list.sort((a, b) => {
-      return b.steamMinPrice / b.buffMinPrice - a.steamMinPrice / a.buffMinPrice;
+      return (parseFloat(b.buffBuyPrice) * 0.975 - parseFloat(b.c5MinPrice)) - (parseFloat(a.buffBuyPrice) * 0.975 - parseFloat(a.c5MinPrice));
     });
-    list = list.slice(0, 300);
-    list = list.filter((item, index) => {
-      return !list.slice(index + 1).some(e => {
-        return e.goodsName === item.goodsName;
-      });
-    });
-    list = list.slice(0, 80).map(e => {
+    list = list.slice(0, 200);
+    list = list.map(e => {
       return {
         id: e._id,
         buffId: e.buffId,
+        igxeId: e.igxeId,
+        c5link: e.c5link,
         goodsName: e.goodsName,
+        steamMarketUrl: e.steamMarketUrl,
+        c5MinPrice: e.c5MinPrice,
+        igxeMinPrice: e.igxeMinPrice,
         buffMinPrice: e.buffMinPrice,
+        buffBuyPrice: e.buffBuyPrice,
         steamMinPrice: e.steamMinPrice,
-        sellNum: e.sellNum,
-        time: Time[Time.length - 1].date,
+        time: e.date,
       };
     });
     return list;
-  }
-  async canSell() {
-    const Time = await this.ctx.model.Time.find({ type: 'CSGO' });
-    let list = await this.ctx.model.Csgoex.find({ dateId: Time.length ? Time[Time.length - 1]._id : null });
-    list = list.filter(item =>
-      item.steamMinPrice < 100
-      && item.steamMinPrice > 0
-      && item.buffMinPrice / item.steamMinPrice <= 1.1
-      && item.buffMinPrice / item.steamMinPrice > 0.9
-      && item.buffMinPrice >= 0.5
-      && item.goodsName.indexOf('印花') === -1
-    );
-    list.sort((a, b) => {
-      return a.steamMinPrice / a.buffMinPrice - b.steamMinPrice / b.buffMinPrice;
-    });
-    list = list.slice(0, 300);
-    list = list.filter((item, index) => {
-      return !list.slice(index + 1).some(e => {
-        return e.goodsName === item.goodsName;
-      });
-    });
-    list = list.slice(0, 20).map(e => {
-      return {
-        id: e._id,
-        buffId: e.buffId,
-        goodsName: e.goodsName,
-        buffMinPrice: e.buffMinPrice,
-        steamMinPrice: e.steamMinPrice,
-        sellNum: e.sellNum,
-        time: Time[Time.length - 1].date,
-      };
-    });
-    return list;
-  }
-  format(data, id) {
-    return data.map(item => {
-      return {
-        buffId: item.id,
-        goodsName: item.name,
-        steamMinPrice: item.goods_info.steam_price_cny,
-        buffMinPrice: item.sell_min_price,
-        sellNum: item.sell_num,
-        dateId: id,
-      };
-    });
   }
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));

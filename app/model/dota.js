@@ -16,7 +16,7 @@ module.exports = app => {
     igxeMinPrice: { type: Number },
     sellNum: { type: Number },
     igxeSellNum: { type: Number },
-    dateId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    date: { type: Date },
   });
 
   return mongoose.model('Dota', DotaSchema);

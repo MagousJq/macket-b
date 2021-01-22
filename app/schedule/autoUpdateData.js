@@ -1,3 +1,4 @@
+'use strict';
 const Subscription = require('egg').Subscription;
 
 class UpdateData extends Subscription {
@@ -12,19 +13,19 @@ class UpdateData extends Subscription {
 
   // subscribe 是真正定时任务执行时被运行的函数
   async subscribe() {
-    const data1 = await this.ctx.service.getBuffCsgoPrice.proxy()
-    if(!data1){
-      const data2 = await this.ctx.service.getBuffCsgoPrice.validSession()
+    const data1 = await this.ctx.service.getBuffCsgoPrice.proxy();
+    if (!data1) {
+      const data2 = await this.ctx.service.getBuffCsgoPrice.validSession();
       if (!data2) {
         // await this.ctx.service.getBuffCsgoPrice.store(csgoTotal);
         // await this.ctx.service.getIgxeCsgoPrice.getTotalData();
-  
+
         // await this.ctx.service.getBuffDotaPrice.store(dotaTotal);
         // await this.ctx.service.getIgxeDotaPrice.getTotalData();
       } else {
         console.log('部分session有错');
       }
-    }else {
+    } else {
       console.log('部分代理IP有错');
     }
   }

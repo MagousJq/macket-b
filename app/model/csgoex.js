@@ -8,15 +8,17 @@ module.exports = app => {
     buffId: { type: Number },
     igxeId: { type: Number },
     goodsName: { type: String },
+    c5link: { type: String },
     steamMarketUrl: { type: String },
     steamMinPrice: { type: Number },
     igxeMinPrice: { type: Number },
+    c5MinPrice: { type: Number },
     igxeCheapPrice: { type: Number },
     buffBuyPrice: { type: Number },
     buffMinPrice: { type: Number },
     sellNum: { type: Number },
     igxeSellNum: { type: Number },
-    dateId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    date: { type: Date },
   });
 
   return mongoose.model('Csgoex', CsgoexSchema);
